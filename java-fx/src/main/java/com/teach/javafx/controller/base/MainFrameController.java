@@ -2,8 +2,7 @@ package com.teach.javafx.controller.base;
 
 import com.teach.javafx.AppStore;
 import com.teach.javafx.MainApplication;
-import com.teach.javafx.request.HttpRequestUtil;
-import com.teach.javafx.request.MyTreeNode;
+import com.teach.javafx.request.*;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -13,8 +12,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import com.teach.javafx.request.DataRequest;
-import com.teach.javafx.request.DataResponse;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -351,5 +348,34 @@ public class MainFrameController {
     }
     public ToolController getToolController(String name){
         return  controlMap.get(name);
+    }
+
+    public void onChangeToStudent(){
+        changeRole("2022030001","123456");
+    }
+
+    public void onChangeToTeacher(){
+        changeRole("teacher1","123456");
+    }
+
+    public void onChangeToAdmin(){
+        changeRole("admin","123456");
+    }
+
+    private void changeRole(String username, String pwd){
+        LoginRequest loginRequest = new LoginRequest(username,pwd);
+        String msg = HttpRequestUtil.login(loginRequest);
+        if(msg != null) {
+            MessageDialog.showDialog( msg);
+            return;
+        }
+        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("base/main-frame.fxml"));
+        try {
+            Scene scene = new Scene(fxmlLoader.load(), -1, -1);
+            AppStore.setMainFrameController((MainFrameController) fxmlLoader.getController());
+            MainApplication.resetStage("教师中心", scene);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

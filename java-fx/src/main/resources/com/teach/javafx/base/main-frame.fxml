@@ -11,6 +11,7 @@
 <?import javafx.scene.text.Font?>
 <!-- 前端应用主框架FXML配置文件 对应页面交互控制类 com.teach.javafx.controller.base.MainFrameController -->
 <?import javafx.scene.control.TreeView?>
+<?import javafx.scene.control.Button?>
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.teach.javafx.controller.base.MainFrameController">
   <top>
     <MenuBar fx:id="menuBar" />
@@ -33,7 +34,10 @@
             <Color red="0.625" green="0.625" blue="0.625" fx:id="x4" />
           </textFill>
         </Label>
+        <Button text="切换为学生" onAction="#onChangeToStudent" />
+        <Button text="切换为老师" onAction="#onChangeToTeacher" />
         <Pane prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="ALWAYS" />
+        <Button text="切换为管理员" onAction="#onChangeToAdmin" />
         <Label font="$x3" maxWidth="-1.0" text="Right status" textFill="$x4" HBox.hgrow="NEVER" />
       </children>
       <padding>
