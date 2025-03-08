@@ -2,8 +2,8 @@ package com.teach.javafx.controller.base;
 
 import com.teach.javafx.AppStore;
 import com.teach.javafx.MainApplication;
-import com.teach.javafx.request.HttpRequestUtil;
-import com.teach.javafx.request.MyTreeNode;
+import com.teach.javafx.request.*;
+import com.teach.javafx.AppStore;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -13,8 +13,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import com.teach.javafx.request.DataRequest;
-import com.teach.javafx.request.DataResponse;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -43,6 +41,8 @@ public class MainFrameController {
     private TreeView<MyTreeNode> menuTree;
     @FXML
     protected TabPane contentTabPane;
+    @FXML
+    private Label role_status;
 
     private ChangePanelHandler handler= null;
 
@@ -170,7 +170,7 @@ public class MainFrameController {
         initMenuTree(mList);
         contentTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
         contentTabPane.setStyle("-fx-background-image: url('shanda1.jpg'); -fx-background-repeat: no-repeat; -fx-background-size: cover;");  //inline选择器
-
+        role_status.setText(AppStore.getJwt().getRole());
 
     }
 
@@ -351,5 +351,34 @@ public class MainFrameController {
     }
     public ToolController getToolController(String name){
         return  controlMap.get(name);
+    }
+
+    public void onChangeToStudent(){
+        changeRole("2022030001","123456","学生中心");
+    }
+
+    public void onChangeToTeacher(){
+        changeRole("teacher1","123456","教师中心");
+    }
+
+    public void onChangeToAdmin(){
+        changeRole("admin","123456","教务管理");
+    }
+
+    private void changeRole(String username, String pwd, String names){
+        LoginRequest loginRequest = new LoginRequest(username,pwd);
+        String msg = HttpRequestUtil.login(loginRequest);
+        if(msg != null) {
+            MessageDialog.showDialog( msg);
+            return;
+        }
+        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("base/main-frame.fxml"));
+        try {
+            Scene scene = new Scene(fxmlLoader.load(), 1024, 768);
+            AppStore.setMainFrameController((MainFrameController) fxmlLoader.getController());
+            MainApplication.resetStage(names, scene);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
