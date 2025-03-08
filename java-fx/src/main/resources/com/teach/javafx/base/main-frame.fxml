@@ -26,7 +26,7 @@
   <bottom>
     <HBox id="HBox" alignment="CENTER_LEFT" spacing="5.0">
       <children>
-        <Label maxHeight="1.7976931348623157E308" maxWidth="-1.0" text="Left status" HBox.hgrow="ALWAYS">
+        <Label fx:id="role_status" maxHeight="1.7976931348623157E308" maxWidth="-1.0" text="" HBox.hgrow="ALWAYS">
           <font>
             <Font size="11.0" fx:id="x3" />
           </font>

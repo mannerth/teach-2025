@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"  prefWidth="800.0" fx:controller="com.teach.javafx.controller.CourseListController" >
+    <center>
+        <GridPane fx:id="content" style="" alignment="CENTER" gridLinesVisible="true" >
+
+            <columnConstraints>
+                <ColumnConstraints prefWidth="100"/>
+                <ColumnConstraints prefWidth="100"/>
+                <ColumnConstraints prefWidth="100"/>
+                <ColumnConstraints prefWidth="100"/>
+                <ColumnConstraints prefWidth="100"/>
+                <ColumnConstraints prefWidth="100"/>
+                <ColumnConstraints prefWidth="100"/>
+                <ColumnConstraints prefWidth="100"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints prefHeight="80"/>
+                <RowConstraints prefHeight="80"/>
+                <RowConstraints prefHeight="80"/>
+                <RowConstraints prefHeight="80"/>
+                <RowConstraints prefHeight="80"/>
+                <RowConstraints prefHeight="80"/>
+            </rowConstraints>
+            <Label text="8:00-9:50"   GridPane.columnIndex="0" GridPane.rowIndex="1"/><!--课程时间信息 -->
+            <Label text="10:10-12:00" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+            <Label text="14:00-15:50" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+            <Label text="16:10-18:00" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+            <Label text="19:00-20:50" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+
+            <Label text="时间" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <Label text="星期一" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+            <Label text="星期二" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+            <Label text="星期三" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+            <Label text="星期四" GridPane.columnIndex="4" GridPane.rowIndex="0"/>
+            <Label text="星期五" GridPane.columnIndex="5" GridPane.rowIndex="0"/>
+            <Label text="星期六" GridPane.columnIndex="6" GridPane.rowIndex="0"/>
+            <Label text="星期日" GridPane.columnIndex="7" GridPane.rowIndex="0"/>
+
+
+        </GridPane>
+    </center>
+
+</BorderPane>
