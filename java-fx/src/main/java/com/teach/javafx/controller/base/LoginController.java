@@ -26,7 +26,7 @@ public class LoginController {
     @FXML
     private Button loginButton;
     /**
-     * 页面加载对象创建完成初始话方法，页面中控件属性的设置，初始数据显示等初始操作都在这里完成，其他代码都事件处理方法里
+     * 页面加载对象创建完成初始化方法，页面中控件属性的设置，初始数据显示等初始操作都在这里完成，其他代码都事件处理方法里
      */
     @FXML
     public void initialize() {
