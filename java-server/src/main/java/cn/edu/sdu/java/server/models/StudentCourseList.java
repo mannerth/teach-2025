@@ -19,10 +19,10 @@ public class StudentCourseList {
     @Id
     private Integer personId;
 
-//    @OneToOne
-//    @JoinColumn(name="personId")
-//    @JsonIgnore
-//    private Person person;
+    @OneToOne
+    @JoinColumn(name="personId")
+    @JsonIgnore
+    private Person person;
 
     @Size(max = 20000)
     private String courseList;
