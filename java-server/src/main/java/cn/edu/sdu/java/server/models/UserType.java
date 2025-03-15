@@ -8,6 +8,7 @@ import jakarta.persistence.*;
  * Integer id user_type 表 主键 id
  * EUserType nam 角色名称 ROLE_ADMIN, ROLE_STUDENT,ROLE_TEACHER
  */
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 @Getter
@@ -19,6 +20,6 @@ public class UserType {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(length = 20)
+    @Size(max = 20)
     private String name;
 }

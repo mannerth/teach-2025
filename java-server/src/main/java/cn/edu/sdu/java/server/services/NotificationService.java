@@ -7,6 +7,8 @@ import cn.edu.sdu.java.server.payload.response.DataResponse;
 import cn.edu.sdu.java.server.repositorys.NotificationRepository;
 import cn.edu.sdu.java.server.util.ComDataUtil;
 import cn.edu.sdu.java.server.util.CommonMethod;
+import cn.edu.sdu.java.server.util.DateTimeTool;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import cn.edu.sdu.java.server.payload.request.DataRequest;
 
@@ -29,9 +31,9 @@ public class NotificationService {
             return m;
         m.put("releaseTime", ZonedDateTime.ofInstant(s.getReleaseTime().toInstant(), ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-
         m.put("num",s.getNum());
         m.put("title",s.getTitle());
+        m.put("notificationId", s.getNotificationId());
 
         return m;
     }
@@ -56,24 +58,25 @@ public class NotificationService {
 
     public DataResponse notificationDelete(DataRequest dataRequest) {
         Integer notificationId = dataRequest.getInteger("notificationId");  //获取notification_id值
-        Notification s = null;
-        Optional<Notification> op;
+        Notification n = null;
+
         if (notificationId != null && notificationId > 0) {
-            op = notificationRepository.findById(notificationId);   //查询获得实体对象
+            Optional<Notification> op;
+            op = notificationRepository.findByNotificationId(notificationId);   //查询获得实体对象
             if(op.isPresent()) {
-                s = op.get();
-                notificationRepository.delete(s);    //首先数据库永久删除学生信息
+                n = op.get();
+                notificationRepository.delete(n);    //首先数据库永久删除通知信息
             }
         }
         return CommonMethod.getReturnMessageOK();  //通知前端操作正常
     }
 
     public DataResponse getNotificationInfo(DataRequest dataRequest) {
-        Integer personId = dataRequest.getInteger("personId");
+        Integer notificationId = dataRequest.getInteger("notificationId");
         Notification s = null;
         Optional<Notification> op;
-        if (personId != null) {
-            op = notificationRepository.findById(personId); //根据学生主键从数据库查询学生的信息
+        if (notificationId != null) {
+            op = notificationRepository.findById(notificationId); //根据学生主键从数据库查询学生的信息
             if (op.isPresent()) {
                 s = op.get();
             }
@@ -91,37 +94,49 @@ public class NotificationService {
     public DataResponse notificationEditSave(DataRequest dataRequest) {
         // 获取通知 ID
         Integer notificationId = dataRequest.getInteger("notificationId");
-        if (notificationId == null || notificationId <= 0) {
-            return CommonMethod.getReturnMessageError("Invalid notificationId");
+        Map<String, Object> form = dataRequest.getMap("form");
+        String num = CommonMethod.getString(form, "num");
+
+        Notification n = null;
+        boolean isNew = false;
+
+        // 如果提供了通知 ID，则尝试获取对应的实体
+        if (notificationId != null) {
+            Optional<Notification> op = notificationRepository.findById(notificationId);
+            if (op.isPresent()) {
+                n = op.get();
+            }
         }
 
-        // 获取通知的其他字段
-        String title = dataRequest.getString("title");
-        Date releaseTime = dataRequest.getDate("release_Time");
-
-        // 检查必填字段是否为空
-        if (title == null || title.trim().isEmpty()) {
-            return CommonMethod.getReturnMessageError("Title cannot be empty");
+        // 检查编号是否已存在
+        Optional<Notification> nOp = notificationRepository.findByNum(num);
+        if (nOp.isPresent()) {
+            // 如果编号已存在，且当前操作不是更新该编号对应的记录，则返回错误
+            if (n == null || !n.getNum().equals(num)) {
+                return CommonMethod.getReturnMessageError("新编号已经存在，不能添加或修改！");
+            }
         }
 
-        // 根据 ID 查询通知
-        Optional<Notification> optionalNotification = notificationRepository.findById(notificationId);
-        if (!optionalNotification.isPresent()) {
-            return CommonMethod.getReturnMessageError("Notification not found");
+        // 如果没有找到通知 ID 对应的实体，则创建一个新的实体
+        if (n == null) {
+            n = new Notification();
+            isNew = true;
         }
 
-        // 获取通知实体并更新字段
-        Notification notification = optionalNotification.get();
-        notification.setTitle(title);
-        notification.setReleaseTime(releaseTime);
+        // 设置表单数据到通知实体
+        n.setNotificationId(notificationId);
+        n.setNum(num);
+        n.setTitle(CommonMethod.getString(form, "title"));
+        n.setReleaseTime(CommonMethod.getTime(form, "releaseTime"));
 
-        try {
-            // 保存更新后的通知
-            notificationRepository.save(notification);
-            return CommonMethod.getReturnMessageOK("Notification updated successfully");
-        } catch (Exception e) {
-            // 捕获异常并返回错误信息
-            return CommonMethod.getReturnMessageError("Failed to update notification: " + e.getMessage());
+        // 保存通知实体
+        notificationRepository.save(n);
+
+        // 返回结果
+        if (isNew) {
+            return CommonMethod.getReturnData(n.getNotificationId(), "新增通知成功");
+        } else {
+            return CommonMethod.getReturnData(n.getNotificationId(), "通知更新成功");
         }
     }
 }
