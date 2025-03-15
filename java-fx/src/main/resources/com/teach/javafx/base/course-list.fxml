@@ -7,27 +7,61 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"  prefWidth="800.0" fx:controller="com.teach.javafx.controller.CourseListController" >
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.layout.HBox?>
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" prefWidth="800.0" fx:controller="com.teach.javafx.controller.CourseListController" >
+    <top>
+        <VBox alignment="BOTTOM_RIGHT">
+            <ComboBox prefHeight="50" prefWidth="100" fx:id="week"/>
+        </VBox>
+    </top>
+    <right>
+
+        <VBox alignment="BOTTOM_CENTER" >
+            <Label text="添加自定义课程" style="-fx-font-size: 13;" />
+            <Label text="课程名称：" />
+            <TextField fx:id="courseName" />
+            <Label text="上课地点：" />
+            <TextField fx:id="coursePlace" />
+            <Label prefHeight="20"/>
+            <HBox>
+                <ComboBox promptText="上课时间" fx:id="time" />
+                <ComboBox promptText="上课节次" fx:id="time1" />
+            </HBox>
+            <Label prefHeight="20"/>
+            <HBox>
+                <Label text="周次:"/>
+                <ComboBox promptText="开始" fx:id="beginWeek" />
+                <Label text="-"/>
+                <ComboBox promptText="结束" fx:id="endWeek" />
+            </HBox>
+            <Label prefHeight="20"/>
+            <Button text="添加" onAction="#onAddNewCourse"/>
+            <Label prefHeight="40"/>
+        </VBox>
+    </right>
     <center>
-        <GridPane fx:id="content" style="" alignment="CENTER" gridLinesVisible="true" >
+        <GridPane fx:id="content" style="-fx-font-size: 15" alignment="CENTER" gridLinesVisible="true" >
 
             <columnConstraints>
-                <ColumnConstraints prefWidth="100"/>
-                <ColumnConstraints prefWidth="100"/>
-                <ColumnConstraints prefWidth="100"/>
-                <ColumnConstraints prefWidth="100"/>
-                <ColumnConstraints prefWidth="100"/>
-                <ColumnConstraints prefWidth="100"/>
-                <ColumnConstraints prefWidth="100"/>
-                <ColumnConstraints prefWidth="100"/>
+                <ColumnConstraints prefWidth="180"/>
+                <ColumnConstraints prefWidth="180"/>
+                <ColumnConstraints prefWidth="180"/>
+                <ColumnConstraints prefWidth="180"/>
+                <ColumnConstraints prefWidth="180"/>
+                <ColumnConstraints prefWidth="180"/>
+                <ColumnConstraints prefWidth="180"/>
+                <ColumnConstraints prefWidth="180"/>
             </columnConstraints>
             <rowConstraints>
-                <RowConstraints prefHeight="80"/>
-                <RowConstraints prefHeight="80"/>
-                <RowConstraints prefHeight="80"/>
-                <RowConstraints prefHeight="80"/>
-                <RowConstraints prefHeight="80"/>
-                <RowConstraints prefHeight="80"/>
+                <RowConstraints prefHeight="120"/>
+                <RowConstraints prefHeight="120"/>
+                <RowConstraints prefHeight="120"/>
+                <RowConstraints prefHeight="120"/>
+                <RowConstraints prefHeight="120"/>
+                <RowConstraints prefHeight="120"/>
             </rowConstraints>
             <Label text="8:00-9:50"   GridPane.columnIndex="0" GridPane.rowIndex="1"/><!--课程时间信息 -->
             <Label text="10:10-12:00" GridPane.columnIndex="0" GridPane.rowIndex="2"/>

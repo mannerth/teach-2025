@@ -25,21 +25,49 @@ public class StudentCourseListService {
         this.studentCourseListRepository = studentCourseListRepository;
     }
 
+    /// 相应前端课表列表请求
     public DataResponse getStudentCourseList(DataRequest dataRequest) {
         Integer id = dataRequest.getInteger("personId");
+        StudentCourseList s = getTheObject(id);
+        Map<String, String> ret = getMapFromString(s.getCourseList());
+        return CommonMethod.getReturnData(ret);
+    }
+    /// 添加课表内容
+    public DataResponse addStudentCourseList(DataRequest dataRequest){
+        String time = dataRequest.getString("time");        //获取信息
+        String content = dataRequest.getString("content");
+        int id = dataRequest.getInteger("personId");
+        StudentCourseList studentCourseList = getTheObject(id); //请求对象
+        Map<String, String> map = getMapFromString(studentCourseList.getCourseList());
+        map.put(time,content);                                  //添加信息
+        ObjectMapper objectMapper = new ObjectMapper();         //转为json存储
+        try{
+            studentCourseList.setCourseList(objectMapper.writeValueAsString(map));
+        } catch (JsonProcessingException e) {
+            return CommonMethod.getReturnMessage(400,"map转String错误");
+        }
+        studentCourseListRepository.saveAndFlush(studentCourseList);//保存
+        return CommonMethod.getReturnMessage(200,"添加成功");
+    }
+
+    /// 根据id查询学生
+    private StudentCourseList getTheObject(int id){
         Optional<StudentCourseList> optional= studentCourseListRepository.findByPersonId(id);
         StudentCourseList s = optional.orElse(null);
+        return s;
+    }
+
+    /// 封装了一个String转Map函数
+    private Map<String, String> getMapFromString(String s){
+        if(s==null||s.isEmpty())return new HashMap<String,String>();
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, String> ret;
         try{
-            ret = objectMapper.readValue(s.getCourseList(),Map.class);
+            ret = objectMapper.readValue(s,Map.class);
         } catch (JsonProcessingException e) {
             ret = new HashMap<>();
         }
-        return CommonMethod.getReturnData(ret);
+        return ret;
     }
 
-//    public DataResponse addStudentCourseList(DataRequest dataRequest){
-//
-//    }
 }
