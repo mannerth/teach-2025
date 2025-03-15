@@ -201,19 +201,25 @@ public class DateTimeTool {
     }
 
     /**
-     * getCurrentWeekDay 获得当前的星期几
+     * getCurrentWeekDay 获得当前是星期几
      */
     public static int getCurrentWeekDay(){
         Calendar cal = Calendar.getInstance();
         Date date = new Date();
-        date= nextDay(date);
-        date= nextDay(date);
         cal.setTime(date);
         return cal.get(Calendar.DAY_OF_WEEK);
     }
 
+    /**
+     * getCurrentDate 获取此时日期
+     */
+    public static String getCurrentDate() {
+        Calendar cal = Calendar.getInstance();
+        return DateTimeTool.parseDateTime(cal.getTime());
+    }
+
     public static void main(String args[]){
         System.out.println(getCurrentWeekDay());
-
+        System.out.println(getCurrentDate());
     }
 }

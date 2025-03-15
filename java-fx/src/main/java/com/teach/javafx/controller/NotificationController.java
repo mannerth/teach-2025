@@ -1,10 +1,12 @@
 package com.teach.javafx.controller;
 
 import com.teach.javafx.controller.base.MessageDialog;
+import com.teach.javafx.controller.base.ToolController;
 import com.teach.javafx.request.DataRequest;
 import com.teach.javafx.request.DataResponse;
 import com.teach.javafx.request.HttpRequestUtil;
 import com.teach.javafx.util.CommonMethod;
+import com.teach.javafx.util.DateTimeTool;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -18,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class NotificationController {
+public class NotificationController extends ToolController {
     private ImageView photoImageView;
     @FXML
     private TableView<Map> dataTableView;  //通知信息表
@@ -31,14 +33,14 @@ public class NotificationController {
 
     @FXML
     private TextField numField; //通知信息  编号输入域
-    @FXML
-    private TextField dateField;  //通知信息  发布日期输入域
+
     @FXML
     private TextField titleField; //通知信息  主题输入域
 
 
     @FXML
     private TextField numNameTextField;  //查询 编号主题输入域
+
     private Integer notificationId = null;  //当前编辑修改的通知的主键
 
     private ArrayList<Map> notificationList = new ArrayList();  // 学生信息列表数据
@@ -46,7 +48,7 @@ public class NotificationController {
 
 
     /**
-     * 将学生数据集合设置到面板上显示
+     * 将通知消息集合设置到面板上显示
      */
     private void setTableViewData() {
         observableList.clear();
@@ -80,20 +82,19 @@ public class NotificationController {
         TableView.TableViewSelectionModel<Map> tsm = dataTableView.getSelectionModel();
         ObservableList<Integer> list = tsm.getSelectedIndices();
         list.addListener(this::onTableRowSelect);
-
         setTableViewData();
     }
+
     /**
      * 清除学生表单中输入信息
      */
     public void clearPanel() {
         notificationId = null;
         numField.setText("");
-        dateField.setText("");
         titleField.setText("");
     }
 
-    protected void changeStudentInfo() {
+    protected void changeNotificationInfo() {
         Map<String,Object> form = dataTableView.getSelectionModel().getSelectedItem();
         if (form == null) {
             clearPanel();
@@ -109,7 +110,6 @@ public class NotificationController {
         }
         form = (Map) res.getData();
         numField.setText(CommonMethod.getString(form, "num"));
-        dateField.setText(CommonMethod.getString(form, "releaseTime"));
         titleField.setText(CommonMethod.getString(form, "title"));
     }
 
@@ -118,7 +118,7 @@ public class NotificationController {
      */
 
     public void onTableRowSelect(ListChangeListener.Change<? extends Integer> change) {
-        changeStudentInfo();
+        changeNotificationInfo();
     }
 
     /**
@@ -138,7 +138,7 @@ public class NotificationController {
 
 
     /**
-     * 添加新学生， 清空输入信息， 输入相关信息，点击保存即可添加新的学生
+     * 添加新通知， 清空输入信息， 输入相关信息，点击保存即可添加新的通知
      */
     @FXML
     protected void onAddButtonClick() {
@@ -146,7 +146,7 @@ public class NotificationController {
     }
 
     /**
-     * 点击删除按钮 删除当前编辑的学生的数据
+     * 点击删除按钮 删除当前编辑的通知的数据
      */
     @FXML
     protected void onDeleteButtonClick() {
@@ -161,7 +161,10 @@ public class NotificationController {
         }
         notificationId = CommonMethod.getInteger(form, "notificationId");
         DataRequest req = new DataRequest();
+        System.out.println("选中的表单数据: " + form);
+        System.out.println(notificationId);
         req.add("notificationId", notificationId);
+
         DataResponse res = HttpRequestUtil.request("/api/notification/notificationDelete", req);
         if(res!= null) {
             if (res.getCode() == 0) {
@@ -174,7 +177,7 @@ public class NotificationController {
     }
 
     /**
-     * 点击保存按钮，保存当前编辑的学生信息，如果是新添加的学生，后台添加学生
+     * 点击保存按钮，保存当前编辑的通知信息，如果是新添加的通知，后台添加通知
      */
     @FXML
     protected void onSaveButtonClick() {
@@ -184,8 +187,10 @@ public class NotificationController {
         }
         Map<String,Object> form = new HashMap<>();
         form.put("num", numField.getText());
-        form.put("releaseTime", dateField.getText());
         form.put("title", titleField.getText());
+        String a = DateTimeTool.getCurrentDate();
+        form.put("releaseTime", a);
+
         DataRequest req = new DataRequest();
         req.add("notificationId", notificationId);
         req.add("form", form);
@@ -194,13 +199,14 @@ public class NotificationController {
             notificationId = CommonMethod.getIntegerFromObject(res.getData());
             MessageDialog.showDialog("提交成功！");
             onQueryButtonClick();
+            clearPanel();
         } else {
             MessageDialog.showDialog(res.getMsg());
         }
     }
 
     /**
-     * doNew() doSave() doDelete() 重写 ToolController 中的方法， 实现选择 新建，保存，删除 对学生的增，删，改操作
+     * doNew() doSave() doDelete() 重写 ToolController 中的方法， 实现选择 新建，保存，删除 对通知的增，删，改操作
      */
     public void doNew() {
         clearPanel();

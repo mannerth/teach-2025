@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
  * UserType findByName(EUserType name);  根据name查询获得UserType对象 命名规范
  */
 @Repository
-public interface UserTypeRepository extends JpaRepository<UserType, Long> {
-    UserType findByName(EUserType name);
+public interface UserTypeRepository extends JpaRepository<UserType, Integer> {
+    UserType findByName(String name);
 }
