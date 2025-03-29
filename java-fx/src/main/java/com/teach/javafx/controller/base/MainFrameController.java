@@ -1,5 +1,6 @@
 package com.teach.javafx.controller.base;
 
+import com.sun.tools.javac.Main;
 import com.teach.javafx.AppStore;
 import com.teach.javafx.MainApplication;
 import com.teach.javafx.request.*;
@@ -374,7 +375,10 @@ public class MainFrameController {
         }
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("base/main-frame.fxml"));
         try {
-            Scene scene = new Scene(fxmlLoader.load(), 1024, 768);
+            var width = MainApplication.getMainStage().getWidth();
+            var height = MainApplication.getMainStage().getHeight();
+            MainApplication.getMainStage().setIconified(true);
+            Scene scene = new Scene(fxmlLoader.load(), width, height);
             AppStore.setMainFrameController((MainFrameController) fxmlLoader.getController());
             MainApplication.resetStage(names, scene);
         } catch (IOException e) {
