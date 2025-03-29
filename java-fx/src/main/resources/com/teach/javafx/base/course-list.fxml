@@ -56,12 +56,12 @@
                 <ColumnConstraints prefWidth="180"/>
             </columnConstraints>
             <rowConstraints>
-                <RowConstraints prefHeight="120"/>
-                <RowConstraints prefHeight="120"/>
-                <RowConstraints prefHeight="120"/>
-                <RowConstraints prefHeight="120"/>
-                <RowConstraints prefHeight="120"/>
-                <RowConstraints prefHeight="120"/>
+                <RowConstraints prefHeight="140"/>
+                <RowConstraints prefHeight="140"/>
+                <RowConstraints prefHeight="140"/>
+                <RowConstraints prefHeight="140"/>
+                <RowConstraints prefHeight="140"/>
+                <RowConstraints prefHeight="140"/>
             </rowConstraints>
             <Label text="8:00-9:50"   GridPane.columnIndex="0" GridPane.rowIndex="1"/><!--课程时间信息 -->
             <Label text="10:10-12:00" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
