@@ -26,13 +26,30 @@ import java.util.Date;
         uniqueConstraints = {
         })
 public class StudentLeave {
-    @Id
-    private Integer personId;
+//    @Id
+//    private Integer personId;
+//
+//    @OneToOne
+//    @JoinColumn(name = "personId")
+//    @JsonIgnore
+//    private Person person;
+//
+//    @Size(max = 50)
+//    private String name;
+//
+//    @Size(max = 50)
+//    private String className;
+//
+//    private Date startdate;
+//    private Date enddate;
+//
+//    @Size(max = 50)
+//    private String reason;
 
-    @OneToOne
-    @JoinColumn(name = "personId")
-    @JsonIgnore
-    private Person person;
+    @Id
+    private Integer leaveId;
+
+    @JoinColumn(name="leaveId")
 
     @Size(max = 50)
     private String name;
@@ -45,5 +62,4 @@ public class StudentLeave {
 
     @Size(max = 50)
     private String reason;
-
 }

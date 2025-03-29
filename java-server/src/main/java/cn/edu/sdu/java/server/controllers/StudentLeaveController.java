@@ -5,12 +5,18 @@ import cn.edu.sdu.java.server.payload.response.DataResponse;
 import cn.edu.sdu.java.server.services.StudentLeaveService;
 import cn.edu.sdu.java.server.util.CommonMethod;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+
+import java.util.Map;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/studentLeave")
+
 public class StudentLeaveController {
     private StudentLeaveService studentLeaveService;
 
@@ -24,4 +30,15 @@ public class StudentLeaveController {
         String numName = dataRequest.getString("numName");
         return CommonMethod.getReturnData(studentLeaveService.getStudentLeaveList(numName));
     }
+    @PostMapping("/studentLeaveDelete")
+    public DataResponse studentLeaveDelete(@Valid @RequestBody DataRequest dataRequest) {
+        return studentLeaveService.studentLeaveDelete(dataRequest);
+    }
+
+    @PostMapping("/studentLeaveAdd")
+    public DataResponse studentLeaveAdd(@Valid @RequestBody DataRequest dataRequest) {
+        return studentLeaveService.studentLeaveAdd(dataRequest);
+    }
+
+
 }
