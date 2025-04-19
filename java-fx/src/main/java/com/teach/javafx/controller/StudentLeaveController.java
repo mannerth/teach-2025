@@ -4,14 +4,17 @@ import com.teach.javafx.controller.base.MessageDialog;
 import com.teach.javafx.request.DataRequest;
 import com.teach.javafx.request.DataResponse;
 import com.teach.javafx.request.HttpRequestUtil;
+import com.teach.javafx.request.OptionItem;
 import com.teach.javafx.util.CommonMethod;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.MapValueFactory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class StudentLeaveController {
@@ -31,6 +34,18 @@ public class StudentLeaveController {
     private TableColumn<Map, String> idColumn;
     @FXML
     private TextField numNameTextField;  //查询 姓名学号输入域
+
+    @FXML
+    private TextField nameField;  //学生信息  名称输入域
+    @FXML
+    private TextField classNameField; //学生信息  院系输入域
+    @FXML
+    private TextField reasonField; //学生信息  专业输入域
+    @FXML
+    private TextField startDateField; //学生信息  班级输入域
+    @FXML
+    private TextField endDateField; //学生信息  证件号码输入域
+
 
     @FXML
     private Integer leaveId = null;  //当前编辑修改的学生的主键
@@ -73,6 +88,43 @@ public class StudentLeaveController {
         setTableViewData();
     }
 
+    public void clearPanel() {
+        leaveId = null;
+        nameField.setText("");
+        classNameField.setText("");
+        reasonField.setText("");
+        startDateField.setText("");
+        endDateField.setText("");
+
+    }
+
+
+    protected void changeStudentLeaveInfo() {
+        Map<String,Object> form = dataTableView.getSelectionModel().getSelectedItem();
+        if (form == null) {
+            clearPanel();
+            return;
+        }
+        leaveId = CommonMethod.getInteger(form, "leaveId");
+        DataRequest req = new DataRequest();
+        req.add("leaveId", leaveId);
+        DataResponse res = HttpRequestUtil.request("/api/studentLeave/getStudentLeaveInfo", req);
+        if (res.getCode() != 0) {
+            MessageDialog.showDialog(res.getMsg());
+            return;
+        }
+        form = (Map) res.getData();
+        nameField.setText(CommonMethod.getString(form, "name"));
+        classNameField.setText(CommonMethod.getString(form, "className"));
+        reasonField.setText(CommonMethod.getString(form, "reason"));
+        startDateField.setText(CommonMethod.getString(form, "startDate"));
+        endDateField.setText(CommonMethod.getString(form, "endDate"));
+
+    }
+
+
+
+
     @FXML
     protected void onQueryButtonClick() {
         String numName = numNameTextField.getText();
@@ -83,6 +135,15 @@ public class StudentLeaveController {
             studentLeaveList = (ArrayList<Map>) res.getData();
             setTableViewData();
         }
+    }
+
+    public void onTableRowSelect(ListChangeListener.Change<? extends Integer> change) {
+        changeStudentLeaveInfo();
+    }
+
+    @FXML
+    protected void onAddButtonClick() {
+        clearPanel();
     }
 
     @FXML
@@ -108,6 +169,29 @@ public class StudentLeaveController {
             } else {
                 MessageDialog.showDialog(res.getMsg());
             }
+        }
+    }
+
+    @FXML
+    protected void onSaveButtonClick() {
+        if (nameField.getText().isEmpty()) {
+            MessageDialog.showDialog("姓名为空，不能修改");
+            return;
+        }
+        Map<String,Object> form = new HashMap<>();
+        form.put("name", nameField.getText());
+        form.put("className", classNameField.getText());
+        form.put("reason", reasonField.getText());
+        form.put("startDate", startDateField.getText());
+        form.put("endDate", endDateField.getText());
+        DataRequest req = new DataRequest();
+        req.add("leaveId", leaveId);
+        req.add("form", form);
+        DataResponse res = HttpRequestUtil.request("/api/studentLeave/studentLeaveEditSave", req);
+        if (res != null && res.getCode() == 0) {
+            leaveId = CommonMethod.getIntegerFromObject(res.getData());
+            MessageDialog.showDialog("提交成功！");
+            onQueryButtonClick();
         }
     }
 }

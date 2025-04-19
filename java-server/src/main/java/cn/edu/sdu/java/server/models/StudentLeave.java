@@ -3,6 +3,7 @@ package cn.edu.sdu.java.server.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 
@@ -47,9 +48,14 @@ public class StudentLeave {
 //    private String reason;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer leaveId;
 
-    @JoinColumn(name="leaveId")
+//       // 字段非空
+//    @Size(max = 20)   //字段长度最长为20
+//    private String num;
+
+//    @JoinColumn(name="leaveId")
 
     @Size(max = 50)
     private String name;

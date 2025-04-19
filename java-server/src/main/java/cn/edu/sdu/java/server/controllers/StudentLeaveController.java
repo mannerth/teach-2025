@@ -35,9 +35,16 @@ public class StudentLeaveController {
         return studentLeaveService.studentLeaveDelete(dataRequest);
     }
 
-    @PostMapping("/studentLeaveAdd")
-    public DataResponse studentLeaveAdd(@Valid @RequestBody DataRequest dataRequest) {
-        return studentLeaveService.studentLeaveAdd(dataRequest);
+    @PostMapping("/getStudentLeaveInfo")
+    @PreAuthorize("hasRole('ADMIN')")
+    public DataResponse getStudentLeaveInfo(@Valid @RequestBody DataRequest dataRequest) {
+        return studentLeaveService.getStudentLeaveInfo(dataRequest);
+    }
+
+    @PostMapping("/studentLeaveEditSave")
+    @PreAuthorize(" hasRole('ADMIN')")
+    public DataResponse studentLeaveEditSave(@Valid @RequestBody DataRequest dataRequest) {
+        return studentLeaveService.studentLeaveEditSave(dataRequest);
     }
 
 
