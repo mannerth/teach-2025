@@ -6,10 +6,50 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.teach.javafx.controller.PersonalInformationController">
+<BorderPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.teach.javafx.controller.PersonalInformationController">
     <center>
         <VBox fx:id="content">
+            <HBox spacing="10">
+                <Label text="姓名" />
+                <TextArea fx:id="name" editable="false" prefRowCount="1" prefColumnCount="20" />
+            </HBox>
+            <HBox spacing="10">
+                <Label text="性别" />
+                <TextArea fx:id="gender" editable="false" prefRowCount="1" prefColumnCount="20" />
+            </HBox>
+            <HBox spacing="10">
+                <Label text="学号" />
+                <TextArea fx:id="num" editable="false" prefRowCount="1" prefColumnCount="20" />
+            </HBox>
+            <HBox spacing="10">
+                <Label text="班级" />
+                <TextArea fx:id="className" editable="false" prefRowCount="1" prefColumnCount="20" />
+            </HBox>
+            <HBox spacing="10">
+                <Label text="专业" />
+                <TextArea fx:id="major" editable="false" prefRowCount="1" prefColumnCount="20" />
+            </HBox>
+            <HBox spacing="10">
+                <Label text="学院" />
+                <TextArea fx:id="dept" editable="false" prefRowCount="1" prefColumnCount="20" />
+            </HBox>
+            <HBox spacing="10">
+                <Label text="电话" />
+                <TextArea fx:id="phone" editable="true" prefRowCount="1" prefColumnCount="20" />
+            </HBox>
+            <HBox spacing="10">
+                <Label text="邮箱" />
+                <TextArea fx:id="email" editable="true" prefRowCount="1" prefColumnCount="20" />
+            </HBox>
+            <HBox spacing="10">
+                <Label text="地址" />
+                <TextArea fx:id="address" editable="true" prefRowCount="1" prefColumnCount="20" />
+            </HBox>
+            <HBox>
+                <Button onAction="#onSave" text="保存修改"  >
 
+                </Button>
+            </HBox>
         </VBox>
     </center>
 </BorderPane>
