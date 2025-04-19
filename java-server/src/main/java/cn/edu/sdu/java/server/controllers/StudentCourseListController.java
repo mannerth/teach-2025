@@ -28,4 +28,9 @@ public class StudentCourseListController {
     public DataResponse getStudentList(@Valid @RequestBody DataRequest dataRequest) {
         return studentCourseListService.getStudentCourseList(dataRequest);
     }
+
+    @PostMapping("/addCourse")
+    public DataResponse addCourse(@Valid @RequestBody DataRequest dataRequest){
+        return studentCourseListService.addStudentCourseList(dataRequest);
+    }
 }
