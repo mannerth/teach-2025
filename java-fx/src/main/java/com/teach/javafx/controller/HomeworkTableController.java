@@ -22,69 +22,54 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class ScoreTableController {
+public class HomeworkTableController {
     @FXML
     private TableView<Map> dataTableView;
     @FXML
-    private TableColumn<Map,String> studentNumColumn;
+    private TableColumn<Map,String> homeworkIdColumn;
     @FXML
-    private TableColumn<Map,String> studentNameColumn;
+    private TableColumn<Map, String> courseNameColumn;
     @FXML
-    private TableColumn<Map,String> classNameColumn;
+    private TableColumn<Map, String> courseNumColumn;
     @FXML
-    private TableColumn<Map,String> courseNumColumn;
+    private TableColumn<Map, String> homeworkReleasingTimeColumn;
     @FXML
-    private TableColumn<Map,String> courseNameColumn;
+    private TableColumn<Map, String> homeworkDeadlineColumn;
+
     @FXML
-    private TableColumn<Map,String> creditColumn;
-    @FXML
-    private TableColumn<Map,String> markColumn;
+    private TableColumn<Map,String> contentColumn;
     @FXML
     private TableColumn<Map, Button> editColumn;
 
 
-    private ArrayList<Map> scoreList = new ArrayList();  // 学生信息列表数据
-    private ObservableList<Map> observableList= FXCollections.observableArrayList();  // TableView渲染列表
+    private ArrayList<Map> homeworkList = new ArrayList();
+    private ObservableList<Map> observableList= FXCollections.observableArrayList();
 
-    @FXML
-    private ComboBox<OptionItem> studentComboBox;
-
-
-    private List<OptionItem> studentList;
     @FXML
     private ComboBox<OptionItem> courseComboBox;
 
-
     private List<OptionItem> courseList;
 
-    private ScoreEditController scoreEditController = null;
+    private HomeworkEditController homeworkEditController = null;
     private Stage stage = null;
-    public List<OptionItem> getStudentList() {
-        return studentList;
-    }
+
     public List<OptionItem> getCourseList() {
         return courseList;
     }
 
-
     @FXML
     private void onQueryButtonClick(){
-        Integer personId = 0;
         Integer courseId = 0;
         OptionItem op;
-        op = studentComboBox.getSelectionModel().getSelectedItem();
-        if(op != null)
-            personId = Integer.parseInt(op.getValue());
         op = courseComboBox.getSelectionModel().getSelectedItem();
         if(op != null)
             courseId = Integer.parseInt(op.getValue());
         DataResponse res;
         DataRequest req = new DataRequest();
-        req.add("personId",personId);
         req.add("courseId",courseId);
-        res = HttpRequestUtil.request("/api/score/getScoreList",req); //从后台获取所有学生信息列表集合
+        res = HttpRequestUtil.request("/api/homework/getHomeworkList",req); //从后台获取所有作业列表集合
         if(res != null && res.getCode()== 0) {
-            scoreList = (ArrayList<Map>)res.getData();
+            homeworkList = (ArrayList<Map>)res.getData();
         }
         setTableViewData();
     }
@@ -93,8 +78,8 @@ public class ScoreTableController {
         observableList.clear();
         Map map;
         Button editButton;
-        for (int j = 0; j < scoreList.size(); j++) {
-            map = scoreList.get(j);
+        for (int j = 0; j < homeworkList.size(); j++) {
+            map = homeworkList.get(j);
             editButton = new Button("编辑");
             editButton.setId("edit"+j);
             editButton.setOnAction(e->{
@@ -109,32 +94,31 @@ public class ScoreTableController {
         if(name == null)
             return;
         int j = Integer.parseInt(name.substring(4,name.length()));
-        Map data = scoreList.get(j);
+        Map data = homeworkList.get(j);
         initDialog();
-        scoreEditController.showDialog(data);
+        homeworkEditController.showDialog(data);
         MainApplication.setCanClose(false);
         stage.showAndWait();
     }
 
     @FXML
     public void initialize() {
-        studentNumColumn.setCellValueFactory(new MapValueFactory<>("studentNum"));  //设置列值工程属性
-        studentNameColumn.setCellValueFactory(new MapValueFactory<>("studentName"));
-        classNameColumn.setCellValueFactory(new MapValueFactory<>("className"));
-        courseNumColumn.setCellValueFactory(new MapValueFactory<>("courseNum"));
+        homeworkIdColumn.setCellValueFactory(new MapValueFactory<>("homeworkId"));
         courseNameColumn.setCellValueFactory(new MapValueFactory<>("courseName"));
-        creditColumn.setCellValueFactory(new MapValueFactory<>("credit"));
-        markColumn.setCellValueFactory(new MapValueFactory<>("mark"));
+        courseNumColumn.setCellValueFactory(new MapValueFactory<>("courseNum"));
+        homeworkReleasingTimeColumn.setCellValueFactory(new MapValueFactory<>("homeworkReleasingTime"));
+        homeworkDeadlineColumn.setCellValueFactory(new MapValueFactory<>("homeworkDeadline"));
+        contentColumn.setCellValueFactory(new MapValueFactory<>("content"));
         editColumn.setCellValueFactory(new MapValueFactory<>("edit"));
 
-        DataRequest req =new DataRequest();
-        studentList = HttpRequestUtil.requestOptionItemList("/api/score/getStudentItemOptionList",req); //从后台获取所有学生信息列表集合
-        courseList = HttpRequestUtil.requestOptionItemList("/api/score/getCourseItemOptionList",req); //从后台获取所有学生信息列表集合
+        DataRequest req = new DataRequest();
+
+        courseList = HttpRequestUtil.requestOptionItemList("/api/homework/getCourseItemOptionList",req);
         OptionItem item = new OptionItem(null,"0","请选择");
-        studentComboBox.getItems().addAll(item);
-        studentComboBox.getItems().addAll(studentList);
+
         courseComboBox.getItems().addAll(item);
         courseComboBox.getItems().addAll(courseList);
+
         dataTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         onQueryButtonClick();
     }
@@ -145,58 +129,77 @@ public class ScoreTableController {
         FXMLLoader fxmlLoader ;
         Scene scene = null;
         try {
-            fxmlLoader = new FXMLLoader(MainApplication.class.getResource("score-edit-dialog.fxml"));
+            fxmlLoader = new FXMLLoader(MainApplication.class.getResource("homework-edit-dialog.fxml"));
             scene = new Scene(fxmlLoader.load(), 260, 140);
             stage = new Stage();
             stage.initOwner(MainApplication.getMainStage());
             stage.initModality(Modality.NONE);
             stage.setAlwaysOnTop(true);
             stage.setScene(scene);
-            stage.setTitle("成绩录入对话框！");
+            stage.setTitle("作业编辑对话框！");
             stage.setOnCloseRequest(event ->{
                 MainApplication.setCanClose(true);
             });
-            scoreEditController = (ScoreEditController) fxmlLoader.getController();
-            scoreEditController.setScoreTableController(this);
-            scoreEditController.init();
+            homeworkEditController = (HomeworkEditController) fxmlLoader.getController();
+            homeworkEditController.setHomeworkTableController(this);
+            homeworkEditController.init();
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
+
+    //对于布置作业对话框的处理
     public void doClose(String cmd, Map<String, Object> data) {
+
         MainApplication.setCanClose(true);
         stage.close();
         if(!"ok".equals(cmd))
             return;
-        DataResponse res;
-        Integer personId = CommonMethod.getInteger(data,"personId");
-        if(personId == null) {
-            MessageDialog.showDialog("没有选中学生不能添加保存！");
-            return;
-        }
+
         Integer courseId = CommonMethod.getInteger(data,"courseId");
         if(courseId == null) {
             MessageDialog.showDialog("没有选中课程不能添加保存！");
             return;
         }
+
+        String content = CommonMethod.getString(data, "content");
+        if(content.isEmpty()) {
+            MessageDialog.showDialog("作业内容不能为空，请添加！");
+            return;
+        }
+
+        String deadline = CommonMethod.getString(data, "homeworkDeadline");
+        if(deadline.isEmpty()) {
+            MessageDialog.showDialog("请设置作业截止日期！");
+            return;
+        }
+
         DataRequest req = new DataRequest();
-        req.add("personId",personId);
         req.add("courseId",courseId);
-        req.add("scoreId",CommonMethod.getInteger(data,"scoreId"));
-        req.add("mark",CommonMethod.getInteger(data,"mark"));
-        res = HttpRequestUtil.request("/api/score/scoreSave",req); //从后台获取所有学生信息列表集合
+        req.add("homeworkId",CommonMethod.getInteger(data,"homeworkId"));
+        req.add("content",content);
+        req.add("releasingTime",CommonMethod.getString(data, "homeworkReleasingTime"));
+        req.add("deadline",deadline);
+        System.out.println(req.getData());
+
+
+        DataResponse res;
+        res = HttpRequestUtil.request("/api/homework/homeworkSave",req); //从后台获取所有学生信息列表集合
         if(res != null && res.getCode()== 0) {
             onQueryButtonClick();
         }
     }
+
     @FXML
     private void onAddButtonClick() {
         initDialog();
-        scoreEditController.showDialog(null);
+        homeworkEditController.showDialog(null);
         MainApplication.setCanClose(false);
         stage.showAndWait();
     }
+
+    //修改作业功能
     @FXML
     private void onEditButtonClick() {
 //        dataTableView.getSelectionModel().getSelectedItems();
@@ -206,10 +209,11 @@ public class ScoreTableController {
             return;
         }
         initDialog();
-        scoreEditController.showDialog(data);
+        homeworkEditController.showDialog(data);
         MainApplication.setCanClose(false);
         stage.showAndWait();
     }
+
     @FXML
     private void onDeleteButtonClick() {
         Map<String,Object> form = dataTableView.getSelectionModel().getSelectedItem();
@@ -221,10 +225,10 @@ public class ScoreTableController {
         if(ret != MessageDialog.CHOICE_YES) {
             return;
         }
-        Integer scoreId = CommonMethod.getInteger(form,"scoreId");
+        Integer homeworkId = CommonMethod.getInteger(form,"homeworkId");
         DataRequest req = new DataRequest();
-        req.add("scoreId", scoreId);
-        DataResponse res = HttpRequestUtil.request("/api/score/scoreDelete",req);
+        req.add("homeworkId", homeworkId);
+        DataResponse res = HttpRequestUtil.request("/api/homework/homeworkDelete",req);
         if(res.getCode() == 0) {
             onQueryButtonClick();
         }
@@ -232,5 +236,4 @@ public class ScoreTableController {
             MessageDialog.showDialog(res.getMsg());
         }
     }
-
 }

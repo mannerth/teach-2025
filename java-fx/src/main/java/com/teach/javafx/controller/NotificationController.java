@@ -184,6 +184,9 @@ public class NotificationController extends ToolController {
         if (numField.getText().isEmpty()) {
             MessageDialog.showDialog("编号为空，不能修改");
             return;
+        }else if(numField.getText().length() >= 10) {
+            MessageDialog.showDialog("编号超出长度限制，请输入9位及以下编号！");
+            return;
         }
         Map<String,Object> form = new HashMap<>();
         form.put("num", numField.getText());

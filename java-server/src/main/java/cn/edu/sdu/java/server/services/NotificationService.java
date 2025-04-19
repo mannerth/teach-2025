@@ -29,8 +29,7 @@ public class NotificationService {
         Map<String,Object> m = new HashMap<>();
         if(s == null)
             return m;
-        m.put("releaseTime", ZonedDateTime.ofInstant(s.getReleaseTime().toInstant(), ZoneId.systemDefault())
-                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        m.put("releaseTime", s.getReleaseTime());
         m.put("num",s.getNum());
         m.put("title",s.getTitle());
         m.put("notificationId", s.getNotificationId());
@@ -117,6 +116,7 @@ public class NotificationService {
             }
         }
 
+
         // 如果没有找到通知 ID 对应的实体，则创建一个新的实体
         if (n == null) {
             n = new Notification();
@@ -131,6 +131,7 @@ public class NotificationService {
 
         // 保存通知实体
         notificationRepository.save(n);
+
 
         // 返回结果
         if (isNew) {

@@ -40,9 +40,6 @@ public class NotificationController {
 
     /**
      * notificationDelete 删除通知信息Web服务 Notification页面的列表里点击删除按钮则可以删除已经存在的通知信息， 前端会将该记录的id 回传到后端，方法从参数获取id，查出相关记录，调用delete方法删除
-     * 这里注意删除顺序，应为user关联person,Notification关联Person 所以要先删除Notification,User，再删除Person
-     *
-     * @param dataRequest 前端personId 要删除的通知的主键 person_id
      * @return 正常操作
      */
 
@@ -53,9 +50,6 @@ public class NotificationController {
 
     /**
      * getNotificationInfo 前端点击通知列表时前端获取通知详细信息请求服务
-     *
-     * @param dataRequest 从前端获取 personId 查询通知信息的主键 person_id
-     * @return 根据personId从数据库中查出数据，存在Map对象里，并返回前端
      */
 
     @PostMapping("/getNotificationInfo")
@@ -67,9 +61,6 @@ public class NotificationController {
     /**
      * notificationEditSave 前端通知信息提交服务
      * 前端把所有数据打包成一个Json对象作为参数传回后端，后端直接可以获得对应的Map对象form, 再从form里取出所有属性，复制到
-     * 实体对象里，保存到数据库里即可，如果是添加一条记录， id 为空，这是先 new Person, User,Notification 计算新的id， 复制相关属性，保存，如果是编辑原来的信息，
-     * personId不为空。则查询出实体对象，复制相关属性，保存后修改数据库信息，永久修改
-     *
      * @return 新建修改通知的主键 notification_id 返回前端
      */
     @PostMapping("/notificationEditSave")
