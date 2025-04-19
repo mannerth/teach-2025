@@ -1,6 +1,5 @@
 package com.teach.javafx.controller.base;
 
-import com.sun.tools.javac.Main;
 import com.teach.javafx.AppStore;
 import com.teach.javafx.MainApplication;
 import com.teach.javafx.request.*;
