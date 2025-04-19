@@ -127,9 +127,12 @@ public class CourseListController {
             }
             String[] inf = course.get(key).split(","); //分割信息
             VBox cou = new VBox();
+            cou.setPrefHeight(content.getPrefHeight());
+            cou.setPrefWidth(content.getPrefWidth());
             for(String i : inf){  //将信息添加到VBox里
                 TextArea textArea = new TextArea(i);
                 textArea.setEditable(false);
+                textArea.setWrapText(true);
                 cou.getChildren().add(textArea);
             }
             present.add(cou);

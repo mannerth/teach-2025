@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" prefWidth="800.0" fx:controller="com.teach.javafx.controller.StudentScoreQueryController" >
+    <center>
+        <TableView fx:id="dataTableView"  >
+            <columns>
+                <TableColumn fx:id="courseNumColumn" prefWidth="140.0" text="课程号" />
+                <TableColumn fx:id="courseNameColumn" prefWidth="160.0" text="课程名" />
+                <TableColumn fx:id="creditColumn" prefWidth="80.0" text="学分" />
+                <TableColumn fx:id="markColumn" prefWidth="80.0" text="成绩" />
+                <TableColumn fx:id="gpaColumn" prefWidth="80" text="绩点" />
+            </columns>
+        </TableView>
+    </center>
+</BorderPane>
