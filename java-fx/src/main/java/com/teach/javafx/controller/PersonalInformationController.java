@@ -69,17 +69,22 @@ public class PersonalInformationController {
     @FXML
     private void onSave(){
         DataRequest req = new DataRequest();
+        req.add("num",inf_map.get("num"));
         Integer personId = jwt.getId();
         req.add("personId",personId);
-        inf_map.put("phone", phone.getText());
-        inf_map.put("email", email.getText());
-        inf_map.put("address",address);
+//        inf_map.put("phone", phone.getText());
+//        inf_map.put("email", email.getText());
+//        inf_map.put("address",address);
+        inf_map.replace("phone", phone.getText());
+        inf_map.replace("email", email.getText());
+        inf_map.replace("address",address);
         req.add("form",inf_map);
         DataResponse res = HttpRequestUtil.request("/api/student/studentEditSave", req);
         if (res.getCode() == 0) {
             MessageDialog.showDialog("提交成功！");
             initialize();
         } else {
+            System.out.println(res.getMsg());
             MessageDialog.showDialog(res.getMsg());
         }
     }

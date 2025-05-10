@@ -53,7 +53,14 @@ public class StudentCourseListService {
     /// 根据id查询学生
     private StudentCourseList getTheObject(int id){
         Optional<StudentCourseList> optional= studentCourseListRepository.findByPersonId(id);
-        StudentCourseList s = optional.orElse(null);
+        //StudentCourseList s = optional.orElse(null);
+        StudentCourseList s;
+        if(optional.isEmpty()){
+            s = new StudentCourseList();
+            studentCourseListRepository.saveAndFlush(s);
+        }else{
+            s = optional.get();
+        }
         return s;
     }
 
