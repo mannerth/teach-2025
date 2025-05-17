@@ -78,7 +78,6 @@ public class StudentLeaveController {
         if (res != null && res.getCode() == 0) {
             studentLeaveList = (ArrayList<Map>) res.getData();
         }
-        System.out.println(res.getData());
         idColumn.setCellValueFactory(new MapValueFactory<>("leaveId"));
         nameColumn.setCellValueFactory(new MapValueFactory<>("name"));//设置列值工程属性
         classNameColumn.setCellValueFactory(new MapValueFactory<>("className"));
@@ -158,7 +157,6 @@ public class StudentLeaveController {
             return;
         }
         leaveId = CommonMethod.getInteger(form, "leaveId");
-        System.out.println(leaveId);
         DataRequest req = new DataRequest();
         req.add("leaveId", leaveId);
         DataResponse res = HttpRequestUtil.request("/api/studentLeave/studentLeaveDelete", req);

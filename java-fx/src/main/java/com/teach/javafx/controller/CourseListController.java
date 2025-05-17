@@ -53,6 +53,10 @@ public class CourseListController {
         initComBox();
     }
 
+    public void delete(){
+        
+    }
+
     public void onAddNewCourse(){
         String theName = courseName.getText();
         String thePlace = coursePlace.getText();

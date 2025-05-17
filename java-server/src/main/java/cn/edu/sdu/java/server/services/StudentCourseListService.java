@@ -50,6 +50,12 @@ public class StudentCourseListService {
         return CommonMethod.getReturnMessage(200,"添加成功");
     }
 
+    /// 删除课表
+    public DataResponse deleteCourseList(DataRequest dataRequest){
+
+        return CommonMethod.getReturnMessageOK();
+    }
+
     /// 根据id查询学生
     private StudentCourseList getTheObject(int id){
         Optional<StudentCourseList> optional= studentCourseListRepository.findByPersonId(id);

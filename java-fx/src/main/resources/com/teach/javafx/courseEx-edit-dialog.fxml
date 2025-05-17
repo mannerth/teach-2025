@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.teach.javafx.controller.CourseExEditController">
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+    </padding>
+    <GridPane vgap="5.0">
+        <columnConstraints>
+            <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="59.5" minWidth="10.0" prefWidth="59.5"/>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="200" minWidth="10.0" prefWidth="200"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+        </rowConstraints>
+        <Label text="教师" GridPane.columnIndex="0" GridPane.rowIndex="2">
+            <GridPane.margin>
+                <Insets right="5.0"/>
+            </GridPane.margin>
+        </Label>
+        <ComboBox fx:id="teacherComboBox" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+        <Label text="课程"/>
+        <ComboBox fx:id="courseComboBox" GridPane.columnIndex="1"/>
+
+        <Label text="课序号" GridPane.rowIndex="1"/>
+        <TextField fx:id="course_numText" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+        <Label text="上课地点" GridPane.rowIndex="3"/>
+        <TextField fx:id="placeText" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+
+        <Label text="最大人数" GridPane.rowIndex="5"/>
+        <TextField fx:id="max_numText" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+
+        <Label text="状态" GridPane.rowIndex="6"/>
+        <ComboBox fx:id="stateComboBox" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+        <Label text="信息" GridPane.rowIndex="7"/>
+        <TextField fx:id="informationText" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+        <Label text="上课时间" GridPane.rowIndex="4"/>
+        <VBox GridPane.columnIndex="1" GridPane.rowIndex="4">
+            <HBox>
+                <ComboBox fx:id="dayComboBox"/>
+                <ComboBox fx:id="classComboBox"/>
+            </HBox>
+            <HBox>
+                <ComboBox fx:id="beginWeekComboBox" />
+                <ComboBox fx:id="endWeekComboBox" />
+            </HBox>
+        </VBox>
+    </GridPane>
+    <FlowPane alignment="CENTER" prefHeight="40.0" prefWidth="300.0" BorderPane.alignment="CENTER">
+        <Button mnemonicParsing="false" onAction="#okButtonClick" text="确认">
+            <FlowPane.margin>
+                <Insets right="10.0"/>
+            </FlowPane.margin>
+        </Button>
+        <Button mnemonicParsing="false" onAction="#cancelButtonClick" text="取消">
+            <FlowPane.margin>
+                <Insets left="10.0"/>
+            </FlowPane.margin>
+        </Button>
+    </FlowPane>
+</VBox>

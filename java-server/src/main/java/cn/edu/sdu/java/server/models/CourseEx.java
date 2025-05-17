@@ -8,10 +8,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "CourseEx",
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = "course_num"),
-        })
+@Table(name = "CourseEx"
+)
 public class CourseEx {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,15 +19,13 @@ public class CourseEx {
     @JoinColumn(name = "course_id")
     @JsonIgnore
     private Course course;
-    //private String course_id;
 
     @ManyToOne
     @JoinColumn(name = "teacher_id")
     @JsonIgnore
     private Teacher teacher;
-    //private String teacher_id;
 
-    @NotBlank
+
     @Size(max = 200)
     private String course_num; //课序号
 
