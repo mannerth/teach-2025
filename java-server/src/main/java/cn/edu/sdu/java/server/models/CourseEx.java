@@ -41,4 +41,6 @@ public class CourseEx {
     @Size(max = 300)
     private String information;
 
+
+
 }
