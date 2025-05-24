@@ -14,10 +14,24 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.MapValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +54,10 @@ public class HomeworkTableController {
     private TableColumn<Map,String> contentColumn;
     @FXML
     private TableColumn<Map, Button> editColumn;
+    @FXML
+    private TableColumn<Map, Button> submitColumn;
+
+    private Integer homeworkId = null;
 
 
     private ArrayList<Map> homeworkList = new ArrayList();
@@ -52,6 +70,9 @@ public class HomeworkTableController {
 
     private HomeworkEditController homeworkEditController = null;
     private Stage stage = null;
+
+    @FXML
+    private ImageView photoImageView;
 
     public List<OptionItem> getCourseList() {
         return courseList;
@@ -86,10 +107,25 @@ public class HomeworkTableController {
                 editItem(((Button)e.getSource()).getId());
             });
             map.put("edit",editButton);
+
+            Button submitButton = new Button("提交作业");
+            // 直接将 homeworkId 存储到按钮的属性中
+            submitButton.getProperties().put("homeworkId", map.get("homeworkId"));
+            Map finalMap = map;
+            submitButton.setOnAction(e -> {
+                // 从按钮的属性中获取 homeworkId
+                int homeworkId = Integer.parseInt(finalMap.get("homeworkId").toString());
+                this.homeworkId = homeworkId; // 设置当前作业的 homeworkId
+                onPhotoButtonClick(); // 调用 onPhotoButtonClick 方法
+            });
+            map.put("submit", submitButton);
+
+
             observableList.addAll(FXCollections.observableArrayList(map));
         }
         dataTableView.setItems(observableList);
     }
+
     public void editItem(String name){
         if(name == null)
             return;
@@ -101,6 +137,54 @@ public class HomeworkTableController {
         stage.showAndWait();
     }
 
+//    public void displayPhoto(){
+//        DataRequest req = new DataRequest();
+//        req.add("fileName", "photo/" + homeworkId + ".jpg");  //个人照片显示
+//        byte[] bytes = HttpRequestUtil.requestByteData("/api/base/getFileByteData", req);
+//        if (bytes != null) {
+//            ByteArrayInputStream in = new ByteArrayInputStream(bytes);
+//            Image img = new Image(in);
+//            photoImageView.setImage(img);
+//        }
+//
+//    }
+
+    public void displayPhoto(){
+        DataRequest req = new DataRequest();
+//        req.add("fileName", "photo/" + homeworkId + ".jpg");  //个人照片显示
+//        byte[] bytes = HttpRequestUtil.requestByteData("/api/base/getFileByteData", req);  // 从后端服务器指定木下读取文件
+        req.add("homeworkId", homeworkId +"");  //个人照片显示
+        byte[] bytes = HttpRequestUtil.requestByteData("/api/base/getBlobByteData", req);  //从后端person表里读取图片
+        if (bytes != null) {
+            ByteArrayInputStream in = new ByteArrayInputStream(bytes);
+            Image img = new Image(in);
+            photoImageView.setImage(img);
+        }
+
+    }
+
+    @FXML
+    public void onPhotoButtonClick(){
+        FileChooser fileDialog = new FileChooser();
+        fileDialog.setTitle("图片上传");
+//        fileDialog.setInitialDirectory(new File("C:/"));
+        fileDialog.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("JPG 文件", "*.jpg"));
+        File file = fileDialog.showOpenDialog(null);
+        if(file == null)
+            return;
+//        DataResponse res =HttpRequestUtil.uploadFile("/api/base/uploadPhoto",file.getPath(),"photo/" + homeworkId + ".jpg");  //上传保存到服务器目录/photo/主键PersonId.jpg
+        DataResponse res =HttpRequestUtil.uploadFile("/api/base/uploadPhotoBlob",file.getPath(), homeworkId+"" );  //上传保存在主键为personId的Person记录的的Photo列中
+        if(res.getCode() == 0) {
+            MessageDialog.showDialog("上传成功！");
+            displayPhoto();
+        }
+        else {
+            MessageDialog.showDialog(res.getMsg());
+        }
+    }
+
+
     @FXML
     public void initialize() {
         homeworkIdColumn.setCellValueFactory(new MapValueFactory<>("homeworkId"));
@@ -110,6 +194,7 @@ public class HomeworkTableController {
         homeworkDeadlineColumn.setCellValueFactory(new MapValueFactory<>("homeworkDeadline"));
         contentColumn.setCellValueFactory(new MapValueFactory<>("content"));
         editColumn.setCellValueFactory(new MapValueFactory<>("edit"));
+        submitColumn.setCellValueFactory(new MapValueFactory<>("submit"));
 
         DataRequest req = new DataRequest();
 
@@ -120,6 +205,27 @@ public class HomeworkTableController {
         courseComboBox.getItems().addAll(courseList);
 
         dataTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+
+        // 添加鼠标点击事件监听器
+        dataTableView.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 1) { // 单击事件
+                Map selectedHomework = dataTableView.getSelectionModel().getSelectedItem();
+                if (selectedHomework != null) {
+                    Object homeworkIdObj = selectedHomework.get("homeworkId");
+                    if (homeworkIdObj instanceof Integer) {
+                        this.homeworkId = (int) homeworkIdObj;
+                    } else if (homeworkIdObj instanceof String) {
+                        this.homeworkId = Integer.parseInt((String) homeworkIdObj);
+                    } else {
+                        System.err.println("homeworkId is not a valid type");
+                    }
+                    displayPhoto(); // 调用 displayPhoto 方法
+                }
+            }
+        });
+
+
         onQueryButtonClick();
     }
 
@@ -174,6 +280,17 @@ public class HomeworkTableController {
             MessageDialog.showDialog("请设置作业截止日期！");
             return;
         }
+
+        //处理作业截止日期小于或等于作业发布日期的情况
+        LocalDateTime homeworkReleasingTime = CommonMethod.getLocalDateTime(data, "homeworkReleasingTime");
+        LocalDateTime homeworkDeadline = CommonMethod.getLocalDateTime(data, "homeworkDeadLineLocalDateTime");
+//        System.out.println(homeworkReleasingTime);
+//        System.out.println(homeworkDeadline);
+        if(!homeworkReleasingTime.isBefore(homeworkDeadline)){
+            MessageDialog.showDialog("作业发布日期不得大于作业截止日期！");
+            return;
+        }
+
 
         DataRequest req = new DataRequest();
         req.add("courseId",courseId);

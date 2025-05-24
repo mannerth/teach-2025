@@ -7,6 +7,7 @@
 <?import javafx.scene.layout.*?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.image.ImageView?>
 <BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" prefWidth="800.0" fx:controller="com.teach.javafx.controller.HomeworkTableController">
     <top>
         <HBox id="HBox" alignment="CENTER_LEFT" spacing="5.0" >
@@ -59,14 +60,20 @@
     <center>
         <TableView fx:id="dataTableView"  >
             <columns>
-                <TableColumn fx:id="homeworkIdColumn" prefWidth="120.0" text="作业编号" />
-                <TableColumn fx:id="courseNumColumn" prefWidth="120.0" text="课程号" />
+                <TableColumn fx:id="homeworkIdColumn" prefWidth="60.0" text="作业编号" />
+                <TableColumn fx:id="courseNumColumn" prefWidth="50.0" text="课程号" />
                 <TableColumn fx:id="courseNameColumn" prefWidth="140.0" text="课程名" />
                 <TableColumn fx:id="homeworkReleasingTimeColumn" prefWidth="140.0" text="作业发布日期" />
                 <TableColumn fx:id="homeworkDeadlineColumn" prefWidth="140.0" text="作业截止日期" />
                 <TableColumn fx:id="contentColumn" prefWidth="240.0" text="作业内容" />
-                <TableColumn fx:id="editColumn" prefWidth="60.0" text="操作" />
+                <TableColumn fx:id="editColumn" prefWidth="52.0" text="操作" />
+                <TableColumn fx:id="submitColumn" prefWidth="75.0" text="提交" />
             </columns>
         </TableView>
     </center>
+    <right>
+        <VBox fx:id="Vbox" alignment="CENTER" spacing="5.0" prefWidth="360" prefHeight="200" BorderPane.alignment="CENTER">
+            <ImageView fx:id="photoImageView" fitWidth="360" fitHeight="200" preserveRatio="true" />
+        </VBox>
+    </right>
 </BorderPane>

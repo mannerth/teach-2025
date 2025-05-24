@@ -1,18 +1,12 @@
 package cn.edu.sdu.java.server.services;
 
-import cn.edu.sdu.java.server.models.DictionaryInfo;
-import cn.edu.sdu.java.server.models.MenuInfo;
-import cn.edu.sdu.java.server.models.User;
-import cn.edu.sdu.java.server.models.UserType;
+import cn.edu.sdu.java.server.models.*;
 import cn.edu.sdu.java.server.payload.request.DataRequest;
 import cn.edu.sdu.java.server.payload.response.DataResponse;
 import cn.edu.sdu.java.server.payload.response.MyTreeNode;
 import cn.edu.sdu.java.server.payload.response.OptionItem;
 import cn.edu.sdu.java.server.payload.response.OptionItemList;
-import cn.edu.sdu.java.server.repositorys.DictionaryInfoRepository;
-import cn.edu.sdu.java.server.repositorys.MenuInfoRepository;
-import cn.edu.sdu.java.server.repositorys.UserRepository;
-import cn.edu.sdu.java.server.repositorys.UserTypeRepository;
+import cn.edu.sdu.java.server.repositorys.*;
 import cn.edu.sdu.java.server.util.ComDataUtil;
 import cn.edu.sdu.java.server.util.CommonMethod;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,6 +14,7 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,6 +27,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.*;
 
 @Service
@@ -44,13 +40,15 @@ public class BaseService {
     private final MenuInfoRepository menuInfoRepository; //菜单数据操作自动注入
     private final DictionaryInfoRepository dictionaryInfoRepository;  //数据字典数据操作自动注入
     private final UserTypeRepository userTypeRepository;   //用户类型数据操作自动注入
+    private final HomeworkRepository homeworkRepository;
 
-    public BaseService(PasswordEncoder encoder, UserRepository userRepository, MenuInfoRepository menuInfoRepository, DictionaryInfoRepository dictionaryInfoRepository, UserTypeRepository userTypeRepository) {
+    public BaseService(PasswordEncoder encoder, UserRepository userRepository, MenuInfoRepository menuInfoRepository, DictionaryInfoRepository dictionaryInfoRepository, UserTypeRepository userTypeRepository, HomeworkRepository homeworkRepository) {
         this.encoder = encoder;
         this.userRepository = userRepository;
         this.menuInfoRepository = menuInfoRepository;
         this.dictionaryInfoRepository = dictionaryInfoRepository;
         this.userTypeRepository = userTypeRepository;
+        this.homeworkRepository = homeworkRepository;
     }
 
     /**
@@ -257,6 +255,7 @@ public class BaseService {
         return new OptionItemList(0, itemList);
     }
 
+
     public ResponseEntity<StreamingResponseBody> getFileByteData(DataRequest dataRequest) {
         String fileName = dataRequest.getString("fileName");
         try {
@@ -375,4 +374,44 @@ public class BaseService {
         return CommonMethod.getReturnMessageOK();
     }
 
+
+    public ResponseEntity<StreamingResponseBody> getBlobByteData(DataRequest dataRequest) {
+        Integer homeworkId = dataRequest.getInteger("homeworkId");
+        try {
+            byte [] data;
+            Optional<Homework> op = homeworkRepository.findById(homeworkId);
+            if(op.isPresent()) {
+                Homework h = op.get();
+                data = h.getPhoto();
+                if(data == null)
+                    return ResponseEntity.notFound().build();
+            }else {
+                return ResponseEntity.internalServerError().build();
+            }
+            MediaType mType = new MediaType(MediaType.APPLICATION_OCTET_STREAM);
+            StreamingResponseBody stream = outputStream -> {
+                outputStream.write(data);
+            };
+            return ResponseEntity.ok()
+                    .contentType(mType)
+                    .body(stream);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return ResponseEntity.internalServerError().build();
+    }
+
+    public DataResponse uploadPhotoBlob(byte[] barr,String homeworkId ) {
+        try {
+            Optional<Homework> op = homeworkRepository.findById(Integer.parseInt(homeworkId));
+            if(op.isEmpty())
+                return CommonMethod.getReturnMessageError("作业不存在！");
+            Homework h = op.get();
+            h.setPhoto(barr);
+            homeworkRepository.save(h);
+            return CommonMethod.getReturnMessageOK();
+        } catch (Exception e) {
+            return CommonMethod.getReturnMessageError("上传错误");
+        }
+    }
 }

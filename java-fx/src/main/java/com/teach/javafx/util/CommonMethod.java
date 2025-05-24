@@ -5,6 +5,9 @@ import com.teach.javafx.request.OptionItem;
 /**
  * CommonMethod 公共处理方法实例类
  */
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 
 public class CommonMethod {
@@ -156,6 +159,30 @@ public class CommonMethod {
             return (Date)obj;
         String str = obj.toString();
         return DateTimeTool.formatDateTime(str,"yyyy-MM-dd HH:mm:ss");
+    }
+
+    public static LocalDateTime getLocalDateTime(Map<String, Object> data,String key) {
+        if(data == null)
+            return null;
+        Object obj = data.get(key);
+        if(obj == null)
+            return null;
+        if (obj instanceof LocalDateTime) {
+            return (LocalDateTime) obj;
+        } else if (obj instanceof String) {
+            // 如果值是字符串，尝试解析为 LocalDateTime
+            String str = (String) obj;
+            try {
+                // 假设字符串格式为 "yyyy-MM-dd HH:mm:ss"
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                return LocalDateTime.parse(str, formatter);
+            } catch (DateTimeParseException e) {
+                // 如果解析失败，返回 null 或抛出异常
+                return null;
+            }
+        }
+        // 如果值不是 LocalDateTime 或可解析的字符串，返回 null 或抛出异常
+        return null;
     }
 
     public static List<OptionItem> changeMapListToOptionItemList(List<Map<String,Object>> mapList) {

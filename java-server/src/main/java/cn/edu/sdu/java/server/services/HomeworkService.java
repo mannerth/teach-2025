@@ -10,6 +10,7 @@ import cn.edu.sdu.java.server.repositorys.CourseRepository;
 import cn.edu.sdu.java.server.repositorys.HomeworkRepository;
 import cn.edu.sdu.java.server.util.CommonMethod;
 import cn.edu.sdu.java.server.util.DateTimeTool;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -19,10 +20,12 @@ public class HomeworkService {
     private final CourseRepository courseRepository;
     private final HomeworkRepository homeworkRepository;
 
-    public HomeworkService(CourseRepository courseRepository, HomeworkRepository homeworkRepository) {
+    public HomeworkService(CourseRepository courseRepository, HomeworkRepository homeworkRepository, JdbcTemplate jdbcTemplate) {
         this.courseRepository = courseRepository;
         this.homeworkRepository = homeworkRepository;
+
     }
+
     public OptionItemList getCourseItemOptionList(DataRequest dataRequest) {
         List<Course> cList = courseRepository.findAll();
         List<OptionItem> itemList = new ArrayList<>();

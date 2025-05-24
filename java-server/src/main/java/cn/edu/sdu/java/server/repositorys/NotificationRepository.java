@@ -1,7 +1,6 @@
 package cn.edu.sdu.java.server.repositorys;
 
 import cn.edu.sdu.java.server.models.Notification;
-import cn.edu.sdu.java.server.models.Person;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
