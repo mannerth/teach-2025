@@ -33,4 +33,9 @@ public class StudentCourseListController {
     public DataResponse addCourse(@Valid @RequestBody DataRequest dataRequest){
         return studentCourseListService.addStudentCourseList(dataRequest);
     }
+
+    @PostMapping("/deleteCourse")
+    public DataResponse deleteCourse(@Valid@RequestBody DataRequest dataRequest){
+        return studentCourseListService.deleteCourseList(dataRequest);
+    }
 }

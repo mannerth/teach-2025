@@ -13,9 +13,15 @@
 <?import javafx.scene.layout.HBox?>
 <BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" prefWidth="800.0" fx:controller="com.teach.javafx.controller.CourseListController" >
     <top>
-        <VBox alignment="BOTTOM_RIGHT">
-            <ComboBox prefHeight="50" prefWidth="100" fx:id="week"/>
-        </VBox>
+        <HBox>
+            <children>
+                <ComboBox prefHeight="30" prefWidth="90" fx:id="week"/>
+                <Label minWidth="5" prefWidth="10"/>
+                <Button prefHeight="30" onAction="#delete" text="删除"/>
+                <Label minWidth="5" prefWidth="10"/>
+                <Label fx:id="testU" text="春风得意马蹄疾，不信人间有别离"/>
+            </children>
+        </HBox>
     </top>
     <right>
 

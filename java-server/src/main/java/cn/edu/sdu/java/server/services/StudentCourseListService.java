@@ -8,6 +8,7 @@ import cn.edu.sdu.java.server.repositorys.StudentCourseListRepository;
 import cn.edu.sdu.java.server.util.CommonMethod;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -40,20 +41,69 @@ public class StudentCourseListService {
         StudentCourseList studentCourseList = getTheObject(id); //请求对象
         Map<String, String> map = getMapFromString(studentCourseList.getCourseList());
         map.put(time,content);                                  //添加信息
-        ObjectMapper objectMapper = new ObjectMapper();         //转为json存储
-        try{
-            studentCourseList.setCourseList(objectMapper.writeValueAsString(map));
-        } catch (JsonProcessingException e) {
-            return CommonMethod.getReturnMessage(400,"map转String错误");
+        String temp = getStringFromMap(map);
+        if(temp == null){
+            return CommonMethod.getReturnMessageError("服务端错误20");
         }
+        studentCourseList.setCourseList(temp);
+        ObjectMapper objectMapper = new ObjectMapper();         //转为json存储
         studentCourseListRepository.saveAndFlush(studentCourseList);//保存
         return CommonMethod.getReturnMessage(200,"添加成功");
+    }
+
+    /// 删除课表
+    public DataResponse deleteCourseList(DataRequest dataRequest){
+        Map<String, Object> data = dataRequest.getData();
+        String key = CommonMethod.getString(data, "preKey");
+        Integer week = CommonMethod.getInteger(data, "week");
+        Integer id = CommonMethod.getInteger(data, "personId");
+        if(key==null||id==null||week==null){
+            return CommonMethod.getReturnMessage(0,"信息不全");
+        }
+        StudentCourseList s = getTheObject(id);
+        boolean has_delete = false;
+        Map<String, String> map = getMapFromString(s.getCourseList());
+        if(map.containsKey(key)){
+            map.remove(key);
+            has_delete = true;
+        }
+        if(!has_delete)
+            for( var i : map.keySet()){
+                String o = i.substring(0,2);
+                if(o.equals(key)){
+                    if(i.length()>2){
+                        String[] dur = i.substring(3).split("-"); //12,1-4
+                        int wb = Integer.parseInt(dur[0]);
+                        int we = Integer.parseInt(dur[1]);
+                        if(week<wb||week>we){
+                            continue;
+                        }
+                    }
+                    map.remove(i);
+                    has_delete = true;
+                    break;
+                }
+            }
+        if(has_delete){
+            s.setCourseList(getStringFromMap(map));
+            studentCourseListRepository.save(s);
+            return CommonMethod.getReturnMessage(1,"删除成功");
+        }else{
+            return CommonMethod.getReturnMessage(0, "error21");
+        }
     }
 
     /// 根据id查询学生
     private StudentCourseList getTheObject(int id){
         Optional<StudentCourseList> optional= studentCourseListRepository.findByPersonId(id);
-        StudentCourseList s = optional.orElse(null);
+        //StudentCourseList s = optional.orElse(null);
+        StudentCourseList s;
+        if(optional.isEmpty()){
+            s = new StudentCourseList();
+            studentCourseListRepository.saveAndFlush(s);
+        }else{
+            s = optional.get();
+        }
         return s;
     }
 
@@ -70,4 +120,12 @@ public class StudentCourseListService {
         return ret;
     }
 
+    private String getStringFromMap(Map map){
+        ObjectMapper objectMapper = new ObjectMapper();         //转为json存储
+        try{
+            return objectMapper.writeValueAsString(map);
+        } catch (JsonProcessingException e) {
+            return null;
+        }
+    }
 }

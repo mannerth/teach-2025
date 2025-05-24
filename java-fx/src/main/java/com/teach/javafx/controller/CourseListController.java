@@ -45,6 +45,10 @@ public class CourseListController {
     @FXML
     private ComboBox endWeek;
 
+    private Integer mx = null; //鼠标点击格节次
+    private Integer my = null; //鼠标点击格日期
+    @FXML
+    private Label testU;
 
     @FXML
     public void initialize() {
@@ -53,12 +57,40 @@ public class CourseListController {
         initComBox();
     }
 
+    public void delete(){
+        if(mx==null||my==null){
+            MessageDialog.showDialog("当前未选中课程，无法删除");
+            return;
+        }
+        String s = my.toString()+ mx.toString();
+        if(MessageDialog.choiceDialog("要删除周"+my+"第"+ mx + "节，确定吗？")!=MessageDialog.CHOICE_YES){
+            return;
+        }
+        DataRequest request = new DataRequest();
+        request.add("preKey",s);
+        request.add("week",theWeek);
+        request.add("personId", AppStore.getJwt().getId());
+        DataResponse response = HttpRequestUtil.request("/api/studentCourseList/deleteCourse",request);
+        if(response!=null){
+            MessageDialog.showDialog(response.getMsg());
+            if(response.getCode()==1){
+                getCourseMap();
+                setContent();
+                my = null;
+                mx = null;
+                testU.setText("春风得意马蹄疾，不信人间有别离");
+            }
+        }else{
+            MessageDialog.showDialog("发生错误course-list-1");
+        }
+    }
+
     public void onAddNewCourse(){
         String theName = courseName.getText();
         String thePlace = coursePlace.getText();
         Map<Character,Integer> convert = new HashMap<>();
         convert.put('一',1);convert.put('二',2);convert.put('三',3);convert.put('四',4);convert.put('五',5);convert.put('六',6);convert.put('日',7);convert.put('七',7);
-        if(theName.isEmpty() || thePlace.isEmpty()){
+        if(theName.isEmpty() || thePlace.isEmpty()||time.getSelectionModel().isEmpty()||time1.getSelectionModel().isEmpty()){
             MessageDialog.showDialog("请输入完整的信息");
             return;
         }
@@ -66,7 +98,9 @@ public class CourseListController {
         char course_time_c = ((String)time1.getValue()).charAt(1);
         String inf = "" + convert.get(course_time) + convert.get(course_time_c);
         if(beginWeek.getValue()!=null&&endWeek.getValue()!=null){
-            inf += ","+beginWeek.getValue()+"-"+endWeek.getValue();
+            int a = Integer.parseInt(beginWeek.getValue().toString());
+            if(a>=1&&a<=20)
+                inf += ","+beginWeek.getValue()+"-"+endWeek.getValue();
         }
         DataRequest req = new DataRequest();
         req.add("personId", AppStore.getJwt().getId());
@@ -99,7 +133,6 @@ public class CourseListController {
         week.valueProperty().addListener(
                 (observable, oldValue, newValue) -> {
                     theWeek = ((String)newValue).charAt(1) - '0';
-                    content.getChildren().removeAll(present);
                     setContent();
                 }
         );
@@ -109,6 +142,8 @@ public class CourseListController {
 
     /// 显示课表课程信息   33,4-4:nnn,ppp
     private void setContent(){
+        content.getChildren().removeAll(present);
+        present.clear();
         for(String key : course.keySet()){ //遍历Map
             int day = key.charAt(0)-'0';
             int cl = key.charAt(1)-'0';
@@ -133,6 +168,11 @@ public class CourseListController {
                 TextArea textArea = new TextArea(i);
                 textArea.setEditable(false);
                 textArea.setWrapText(true);
+                textArea.setOnMouseClicked(event -> {//鼠标点击位置监听
+                    mx = cl;
+                    my = day;
+                    testU.setText("当前鼠标选中周"+day+"第"+ cl + "节");
+                });
                 cou.getChildren().add(textArea);
             }
             present.add(cou);
