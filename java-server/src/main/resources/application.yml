@@ -31,7 +31,9 @@ spring:
       charset: UTF-8
       enabled: true
       force: true
+#attach:
+#  folder: /teach-2025/
 attach:
-  folder: /teach-2025/
+  folder: 
 logging:
   config: classpath:loggback.xml

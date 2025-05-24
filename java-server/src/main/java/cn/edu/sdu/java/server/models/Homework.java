@@ -10,7 +10,6 @@ import java.util.Date;
  * Integer homeworkId homework 主键 homework_id
  * Course course 关联课程 course_id 关联课程的主键 course_id
  * String content 作业内容
- *
  * Date releasingTime 作业发布时间
  * Date deadline 作业截止时间
  */
@@ -33,4 +32,9 @@ public class Homework {
     private String content;
     private Date homeworkReleasingTime;
     private Date homeworkDeadline;
+
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @Column(name=" photo", columnDefinition="longblob", nullable=true)
+    private byte[] photo;
 }

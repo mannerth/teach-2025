@@ -12,8 +12,6 @@ import java.util.List;
  * List<Homework> findByCourseId(Integer courseId)
  */
 
-
-
 @Repository
 public interface HomeworkRepository extends JpaRepository<Homework,Integer> {
     @Query(value="from Homework where (?1=0 or course.courseId=?1)")

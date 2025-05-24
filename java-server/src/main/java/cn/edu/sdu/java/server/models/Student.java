@@ -12,7 +12,6 @@ import jakarta.validation.constraints.Size;
  * Person person 关联到该用户所用的Person对象，账户所对应的人员信息 person_id 关联 person 表主键 person_id
  * String major 专业
  * String className 班级
- *
  */
 import lombok.Getter;
 import lombok.Setter;

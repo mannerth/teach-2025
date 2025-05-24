@@ -1,20 +1,12 @@
 package cn.edu.sdu.java.server.services;
 
-import cn.edu.sdu.java.server.models.*;
 import cn.edu.sdu.java.server.models.Notification;
 import cn.edu.sdu.java.server.payload.request.DataRequest;
 import cn.edu.sdu.java.server.payload.response.DataResponse;
 import cn.edu.sdu.java.server.repositorys.NotificationRepository;
-import cn.edu.sdu.java.server.util.ComDataUtil;
 import cn.edu.sdu.java.server.util.CommonMethod;
 import cn.edu.sdu.java.server.util.DateTimeTool;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-import cn.edu.sdu.java.server.payload.request.DataRequest;
-
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -86,7 +78,6 @@ public class NotificationService {
 
     /**
      * 编辑并保存通知信息
-     *
      * @param dataRequest 包含通知信息的请求数据
      * @return DataResponse 包含操作结果的响应
      */
@@ -127,7 +118,9 @@ public class NotificationService {
         n.setNotificationId(notificationId);
         n.setNum(num);
         n.setTitle(CommonMethod.getString(form, "title"));
-        n.setReleaseTime(CommonMethod.getTime(form, "releaseTime"));
+        String t = DateTimeTool.parseDateTime(CommonMethod.getTime(form, "releaseTime"), "yyyy-MM-dd HH:mm:ss");
+        System.out.println(t);
+        n.setReleaseTime(t);
 
         // 保存通知实体
         notificationRepository.save(n);

@@ -376,8 +376,8 @@ public class MainFrameController {
         try {
             var width = MainApplication.getMainStage().getWidth();
             var height = MainApplication.getMainStage().getHeight();
-            MainApplication.getMainStage().setIconified(true);
-            Scene scene = new Scene(fxmlLoader.load(), width, height);
+            //MainApplication.getMainStage().setIconified(true);
+            Scene scene = new Scene(fxmlLoader.load());
             AppStore.setMainFrameController((MainFrameController) fxmlLoader.getController());
             MainApplication.resetStage(names, scene);
         } catch (IOException e) {
