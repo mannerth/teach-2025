@@ -238,4 +238,25 @@ public class BaseController {
     public DataResponse uploadPhotoWeb(@RequestParam Map<String,Object> pars, @RequestParam("file") MultipartFile file) {
         return baseService.uploadPhotoWeb(pars, file);
     }
+
+    @PostMapping("/getBlobByteData")
+    public ResponseEntity<StreamingResponseBody> getBlobByteData(@Valid @RequestBody DataRequest dataRequest) {
+        return baseService.getBlobByteData(dataRequest);
+    }
+
+    /**
+     * 上传文件服务
+     * 前台请求参数  uploader 信息  remoteFile 服务器文件路径  fileName 前端上传的文件名
+     * 返回前端 正常操作信心和异常操作信息
+     *
+     *
+     */
+    @PostMapping(path = "/uploadPhotoBlob")
+    public DataResponse uploadPhotoBlob(@RequestBody byte[] barr,
+                                        @RequestParam(name = "uploader") String uploader,
+                                        @RequestParam(name = "remoteFile") String homeworkId,
+                                        @RequestParam(name = "fileName") String fileName) {
+        return baseService.uploadPhotoBlob(barr, homeworkId);
+    }
+
 }

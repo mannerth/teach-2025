@@ -33,7 +33,7 @@ public class MessageDialog {
         Stage stage;
         try {
             fxmlLoader = new FXMLLoader(MainApplication.class.getResource("base/message-dialog.fxml"));
-            scene = new Scene(fxmlLoader.load(), 300, 260);
+            scene = new Scene(fxmlLoader.load(), 300, 300);
             stage = new Stage();
             stage.initOwner(MainApplication.getMainStage());
             stage.setAlwaysOnTop(true);
@@ -47,7 +47,7 @@ public class MessageDialog {
             messageController.setStage(stage);
 
             fxmlLoader = new FXMLLoader(MainApplication.class.getResource("base/choice-dialog.fxml"));
-            scene = new Scene(fxmlLoader.load(), 300, 260);
+            scene = new Scene(fxmlLoader.load(), 300, 300);
             stage = new Stage();
             stage.initOwner(MainApplication.getMainStage());
             stage.setAlwaysOnTop(true);
@@ -59,7 +59,6 @@ public class MessageDialog {
             stage.setTitle("信息显示对话框");
             choiceController = (ChoiceController) fxmlLoader.getController();
             choiceController.setStage(stage);
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

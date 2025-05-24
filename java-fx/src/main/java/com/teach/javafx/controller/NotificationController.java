@@ -43,7 +43,7 @@ public class NotificationController extends ToolController {
 
     private Integer notificationId = null;  //当前编辑修改的通知的主键
 
-    private ArrayList<Map> notificationList = new ArrayList();  // 学生信息列表数据
+    private ArrayList<Map> notificationList = new ArrayList();  // 通知信息列表数据
     private ObservableList<Map> observableList = FXCollections.observableArrayList();  // TableView渲染列表
 
 
@@ -70,7 +70,7 @@ public class NotificationController extends ToolController {
         DataResponse res;
         DataRequest req = new DataRequest();
         req.add("numName", "");
-        res = HttpRequestUtil.request("/api/notification/getNotificationList", req); //从后台获取所有学生信息列表集合
+        res = HttpRequestUtil.request("/api/notification/getNotificationList", req); //从后台获取所有通知信息列表集合
         System.out.println(res.getData());
         if (res != null && res.getCode() == 0) {
             notificationList = (ArrayList<Map>) res.getData();
@@ -86,7 +86,7 @@ public class NotificationController extends ToolController {
     }
 
     /**
-     * 清除学生表单中输入信息
+     * 清除通知表单中输入信息
      */
     public void clearPanel() {
         notificationId = null;
@@ -114,7 +114,7 @@ public class NotificationController extends ToolController {
     }
 
     /**
-     * 点击学生列表的某一行，根据notificationId ,从后台查询学生的基本信息，切换学生的编辑信息
+     * 点击通知列表的某一行，根据notificationId ,从后台查询通知的基本信息，切换通知的编辑信息
      */
 
     public void onTableRowSelect(ListChangeListener.Change<? extends Integer> change) {
@@ -122,7 +122,7 @@ public class NotificationController extends ToolController {
     }
 
     /**
-     * 点击查询按钮，从从后台根据输入的串，查询匹配的学生在学生列表中显示
+     * 点击查询按钮，从从后台根据输入的串，查询匹配的通知在通知列表中显示
      */
     @FXML
     protected void onQueryButtonClick() {
@@ -192,6 +192,7 @@ public class NotificationController extends ToolController {
         form.put("num", numField.getText());
         form.put("title", titleField.getText());
         String a = DateTimeTool.getCurrentDate();
+        System.out.println(a);
         form.put("releaseTime", a);
 
         DataRequest req = new DataRequest();

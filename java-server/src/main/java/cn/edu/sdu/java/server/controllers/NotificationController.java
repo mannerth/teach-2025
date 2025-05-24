@@ -5,7 +5,6 @@ import cn.edu.sdu.java.server.services.NotificationService;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import java.util.*;
 
 /**
  * NotificationController 主要是为通知管理数据管理提供的Web请求服务
@@ -27,7 +26,6 @@ public class NotificationController {
      * getNotificationList 通知管理 点击查询按钮请求
      * 前台请求参数 numName 学号或名称的 查询串
      * 返回前端 存储通知信息的 MapList 框架会自动将Map转换程用于前后台传输数据的Json对象，Map的嵌套结构和Json的嵌套结构类似
-     *
      */
 
 
