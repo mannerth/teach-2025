@@ -1,19 +1,21 @@
 package cn.edu.sdu.java.server.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import java.util.*;
 @Getter
 @Setter
 @Entity
+@EqualsAndHashCode
 @Table(name = "CourseEx"
 )
 public class CourseEx {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer courseExId;
 
     @ManyToOne
     @JoinColumn(name = "course_id")
@@ -41,6 +43,7 @@ public class CourseEx {
     @Size(max = 300)
     private String information;
 
-
+    @OneToMany(mappedBy = "courseEx", cascade = CascadeType.ALL)
+    private List<StudentCourse> studentCourses = new ArrayList<>();
 
 }

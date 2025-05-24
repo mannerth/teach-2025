@@ -77,6 +77,7 @@ public class CourseExEditController {
         classComboBox.getItems().addAll(classOpt);
         stateComboBox.getItems().clear();
         stateComboBox.getItems().addAll(state);
+        stateComboBox.getSelectionModel().select(0);
         courseOptList = courseExController.getCourseList();
         courseComboBox.getItems().clear();
         courseComboBox.getItems().addAll(courseOptList);
@@ -105,7 +106,7 @@ public class CourseExEditController {
         String course_num = course_numText.getText();
         String maxN = max_numText.getText();
         String place = placeText.getText();
-        if(course_num.isEmpty()||maxN.isEmpty()||place.isEmpty()||dayComboBox.getSelectionModel().isEmpty()||classComboBox.getSelectionModel().isEmpty()||teacherComboBox.getSelectionModel().isEmpty()){
+        if(stateComboBox.getSelectionModel().isEmpty()||course_num.isEmpty()||maxN.isEmpty()||place.isEmpty()||dayComboBox.getSelectionModel().isEmpty()||classComboBox.getSelectionModel().isEmpty()||teacherComboBox.getSelectionModel().isEmpty()){
             MessageDialog.showDialog("信息不完整，不能添加");
             return;
         }

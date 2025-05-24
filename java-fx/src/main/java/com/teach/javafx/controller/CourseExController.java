@@ -1,5 +1,6 @@
 package com.teach.javafx.controller;
 
+import com.teach.javafx.AppStore;
 import com.teach.javafx.MainApplication;
 import com.teach.javafx.controller.base.MessageDialog;
 import com.teach.javafx.request.DataRequest;
@@ -48,11 +49,20 @@ public class CourseExController {
     private TableColumn<Map,String> choosableColumn;
     @FXML
     private TableColumn<Map, Button> editColumn;
+    @FXML
+    private ComboBox<OptionItem> student_selected;
+    @FXML
+    private Button delete;
+    @FXML
+    private Button add;
+    @FXML
+    private Button edit;
 
     private String[] day = {"周0","周一","周二","周三","周四","周五","周六","周七"};
     private String[] classes = {"","第一节","第二节","第三节","第四节","第五节"};
 
     private ArrayList<Map> courseExList = new ArrayList();  // 选课信息列表数据
+    private ArrayList<Map> selectedCourseList = null;
     private ObservableList<Map> observableList= FXCollections.observableArrayList();  // TableView渲染列表
 
     @FXML
@@ -63,6 +73,7 @@ public class CourseExController {
     @FXML
     private ComboBox<OptionItem> courseComboBox;
 
+    private String role = "";
 
     private List<OptionItem> courseList;
 
@@ -84,9 +95,9 @@ public class CourseExController {
         if(!courseComboBox.getSelectionModel().isEmpty() && courseComboBox.getValue().getId() != null)
             id = courseComboBox.getValue().getId();
         else{
-           id = 0;
+            id = 0;
         }
-        String s = teacherComboBox.getSelectionModel().isEmpty()? "" : ""+teacherComboBox.getSelectionModel().getSelectedItem().getValue();
+        String s = teacherComboBox.getSelectionModel().isEmpty()? "" : teacherComboBox.getSelectionModel().getSelectedItem().getValue();
         requestMainContent(id,s);
     }
 
@@ -94,13 +105,25 @@ public class CourseExController {
         DataRequest request = new DataRequest();
         request.add("courseId",id);
         request.add("num",s);
+        if(isStudent()){
+            Boolean is = true;
+            request.add("is_choosable", is);
+        }
         DataResponse res = HttpRequestUtil.request("/api/CourseEx/findByTeacherCourse",request);
         if(res!=null && res.getCode()==0){
             courseExList = (ArrayList<Map>) res.getData();
         }
+        if(isStudent()){
+            DataRequest r = new DataRequest();
+            r.add("personId", AppStore.getJwt().getId());
+            DataResponse response = HttpRequestUtil.request("/api/CourseEx/getSelectedCourse", r);
+            selectedCourseList = (ArrayList<Map>) response.getData();
+        }
         setTableViewData();
     }
-
+    private boolean isStudent(){
+        return role.equals("ROLE_STUDENT");
+    }
     String getTimeString(String s){
         String res = day[s.charAt(0)-'0'] + classes[s.charAt(1)-'0'];;
         if(s.length()>2){
@@ -111,8 +134,6 @@ public class CourseExController {
                 res += "第"+beginString+"周到第"+endString+"周";
             }
         }
-
-
         return res;
     }
 
@@ -120,15 +141,37 @@ public class CourseExController {
         observableList.clear();
         Map map;
         Button editButton;
-        for (int j = 0; j < courseExList.size(); j++) {
+        ArrayList<Map> OpLis = courseExList;
+        boolean is_selected = false;
+        if(isStudent()){
+            is_selected = student_selected.getValue().getId()==1;
+            if(is_selected){
+                OpLis = selectedCourseList;
+            }
+        }
+        for (int j = 0; j < OpLis.size(); j++) {
             map = courseExList.get(j);
             map.put("time0",map.get("time"));
             map.replace("time",getTimeString(map.get("time").toString()));
             editButton = new Button("编辑");
             editButton.setId("edit"+j);
-            editButton.setOnAction(e->{
-                editItem(((Button)e.getSource()).getId());
-            });
+            if(role.equals("ROLE_STUDENT")){
+                if(is_selected){
+                    editButton.setText("取消选课");
+                    editButton.setOnAction(e->{
+                        cancelSelect(((Button) e.getSource()).getId());
+                    });
+                }else{
+                    editButton.setText("选课");
+                    editButton.setOnAction(e->{
+                        selectCourse(((Button) e.getSource()).getId());
+                    });
+                }
+            }else{
+                editButton.setOnAction(e->{
+                    editItem(((Button)e.getSource()).getId());
+                });
+            }
             map.put("edit",editButton);
             observableList.addAll(FXCollections.observableArrayList(map));
         }
@@ -158,7 +201,7 @@ public class CourseExController {
         placeColumn.setCellValueFactory(new MapValueFactory<>("place"));
         choosableColumn.setCellValueFactory((new MapValueFactory<>("is_choosable")));
         editColumn.setCellValueFactory(new MapValueFactory<>("edit"));
-
+        role = AppStore.getJwt().getRole();
         DataRequest req =new DataRequest();
         teacherList = HttpRequestUtil.requestOptionItemList("/api/CourseEx/getTeacherOptionItemList",req); //从后台获取所有学生信息列表集合
         courseList = HttpRequestUtil.requestOptionItemList("/api/score/getCourseItemOptionList",req); //从后台获取所有学生信息列表集合
@@ -167,9 +210,28 @@ public class CourseExController {
         teacherComboBox.getItems().addAll(teacherList);
         courseComboBox.getItems().addAll(item);
         courseComboBox.getItems().addAll(courseList);
-
         dataTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        setRole();
         onQueryButtonClick();
+    }
+
+    private void setRole(){
+        if(isStudent()){
+            selectedCourseList = new ArrayList<>();
+            add.setVisible(false);
+            delete.setVisible(false);
+            edit.setVisible(false);
+            List<OptionItem> ss = new ArrayList<>();
+            ss.add(new OptionItem(0, "0", "选课列表"));
+            ss.add(new OptionItem(1,"1", "已选课程"));
+            student_selected.getItems().addAll(ss);
+            student_selected.getSelectionModel().select(0);
+            student_selected.setOnAction(event->{
+                onQueryButtonClick();
+            });
+        }else{
+            student_selected.setVisible(false);
+        }
     }
 
     private void initDialog() {
@@ -210,6 +272,37 @@ public class CourseExController {
             requestMainContent(0,"");
         }else{
             MessageDialog.showDialog(res.getMsg());
+        }
+    }
+    private void selectCourse(String name){
+        Integer personId = AppStore.getJwt().getId();
+        if(name == null)
+            return;
+        int j = Integer.parseInt(name.substring(4,name.length()));
+        Map data = courseExList.get(j);
+        Integer courseExId = CommonMethod.getInteger(data, "courseExId");
+        DataRequest request = new DataRequest();
+        request.add("personId", personId);
+        request.add("courseExId", courseExId);
+        DataResponse response = HttpRequestUtil.request("/api/CourseEx/studentSelectCourse", request);
+        if(response!=null){
+            MessageDialog.showDialog(response.getMsg());
+        }
+    }
+    private void cancelSelect(String name){
+        Integer personId = AppStore.getJwt().getId();
+        if(name == null)
+            return;
+        int j = Integer.parseInt(name.substring(4,name.length()));
+        Map data = selectedCourseList.get(j);
+        Integer courseExId = CommonMethod.getInteger(data, "courseExId");
+        DataRequest request = new DataRequest();
+        request.add("personId", personId);
+        request.add("courseExId", courseExId);
+        DataResponse response = HttpRequestUtil.request("/api/CourseEx/studentCancelSelectCourse", request);
+        if(response!=null){
+            MessageDialog.showDialog(response.getMsg());
+            onQueryButtonClick();
         }
     }
     @FXML

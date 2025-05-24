@@ -56,4 +56,20 @@ public class CourseExController {
     public DataResponse findByTeacherCourse(@Valid@RequestBody DataRequest dataRequest){
         return courseExService.getCourseByTeacherAndCourse(dataRequest);
     }
+
+    @PostMapping("/studentSelectCourse")
+    public DataResponse studentSelectCourse(@Valid@RequestBody DataRequest dataRequest){
+        return courseExService.studentSelectCourse(dataRequest);
+    }
+
+    @PostMapping("/studentCancelSelectCourse")
+    public DataResponse studentCancelSelectCourse(@Valid@RequestBody DataRequest dataRequest){
+        return courseExService.studentCancelSelectCourse(dataRequest);
+    }
+
+    @PostMapping("/getSelectedCourse")
+    public DataResponse getSelectedCourse(@Valid@RequestBody DataRequest dataRequest){
+        return courseExService.getSelectedCourse(dataRequest);
+    }
+
 }

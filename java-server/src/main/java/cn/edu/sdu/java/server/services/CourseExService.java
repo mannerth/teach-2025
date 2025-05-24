@@ -1,18 +1,15 @@
 package cn.edu.sdu.java.server.services;
 
-import cn.edu.sdu.java.server.models.Course;
-import cn.edu.sdu.java.server.models.CourseEx;
-import cn.edu.sdu.java.server.models.Teacher;
+import cn.edu.sdu.java.server.models.*;
 import cn.edu.sdu.java.server.payload.request.DataRequest;
 import cn.edu.sdu.java.server.payload.response.DataResponse;
 import cn.edu.sdu.java.server.payload.response.OptionItem;
 import cn.edu.sdu.java.server.payload.response.OptionItemList;
-import cn.edu.sdu.java.server.repositorys.CourseExRepository;
-import cn.edu.sdu.java.server.repositorys.CourseRepository;
-import cn.edu.sdu.java.server.repositorys.TeacherRepository;
+import cn.edu.sdu.java.server.repositorys.*;
 import cn.edu.sdu.java.server.util.CommonMethod;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -20,11 +17,15 @@ public class CourseExService {
     private final CourseExRepository courseExRepository;
     private final CourseRepository courseRepository;
     private final TeacherRepository teacherRepository;
+    private final StudentRepository studentRepository;
+    private final StudentCourseRepository studentCourseRepository;
 
-    public CourseExService(CourseExRepository courseExRepository, CourseRepository courseRepository, TeacherRepository teacherRepository){
+    public CourseExService(CourseExRepository courseExRepository, CourseRepository courseRepository, TeacherRepository teacherRepository, StudentRepository studentRepository, StudentCourseRepository studentCourseRepository){
         this.courseExRepository = courseExRepository;
         this.courseRepository = courseRepository;
         this.teacherRepository = teacherRepository;
+        this.studentRepository = studentRepository;
+        this.studentCourseRepository = studentCourseRepository;
     }
 
     /*
@@ -129,14 +130,15 @@ public class CourseExService {
         Integer id = CommonMethod.getInteger(map, "courseId");
         if(id==null) id = 0;
         String num = CommonMethod.getString(map, "num");
-        if(num==null) num = "";
-        return getResponseFromList(courseExRepository.findCourseByTeacherCourse_num(id,num));
+        if(num==null||num.equals("0")) num = "";
+        Boolean is = (Boolean) map.get("is_choosable");
+        return getResponseFromList(courseExRepository.findCourseByTeacherCourseId(id,num,is));
     }
     private DataResponse getResponseFromList(List<CourseEx> list){
         List< Map<String, Object> > ret = new ArrayList<>();
         for( CourseEx c : list){
             Map<String, Object> map = new HashMap<>();
-            map.put("courseExId",c.getId());
+            map.put("courseExId",c.getCourseExId());
             map.put("courseId",c.getCourse().getCourseId());
             map.put("course_num", c.getCourse_num());
             map.put("courseNum", c.getCourse().getNum());
@@ -161,5 +163,73 @@ public class CourseExService {
             ret.add(new OptionItem(i.getPersonId(), i.getPerson().getNum(),i.getPerson().getNum()+"-"+i.getPerson().getName()));
         }
         return new OptionItemList(0,ret);
+    }
+
+    /// 学生获取已经选的课程
+    public DataResponse getSelectedCourse(DataRequest dataRequest){
+        Map<String, Object> map = dataRequest.getData();
+        Integer id = CommonMethod.getInteger(map, "personId");
+        if(id==null)
+            return CommonMethod.getReturnMessage(0,"信息不全");
+        List<CourseEx> list = courseExRepository.findByStudent(id);
+        return getResponseFromList(list);
+    }
+
+    /// 学生选课        请求参数 personId   courseExId
+    public DataResponse studentSelectCourse(DataRequest dataRequest){
+        Map<String, Object> map = dataRequest.getData();
+        Integer personId = CommonMethod.getInteger(map, "personId");
+        Integer courseExId = CommonMethod.getInteger(map, "courseExId");
+        if(personId==null||courseExId==null){
+            return CommonMethod.getReturnMessage(0,"信息不全");
+        }
+        Optional<Student> _student = studentRepository.findByPersonPersonId(personId);
+        Optional<CourseEx> _courseEx = courseExRepository.findById(courseExId);
+        if(_courseEx.isEmpty()||_student.isEmpty()){
+            return CommonMethod.getReturnMessage(0,"寻找时发生错误");
+        }
+        Student student = _student.get();
+        CourseEx courseEx = _courseEx.get();
+        for(StudentCourse sc : student.getStudentCourses()){
+            if(sc.getCourseEx()==courseEx){
+                return CommonMethod.getReturnMessage(0,"不能重复选课！");
+            }
+        }
+        StudentCourse studentCourse = new StudentCourse();
+        studentCourse.setCourseEx(courseEx);
+        studentCourse.setStudent(student);
+        studentCourse.setSelectedTime(LocalDateTime.now());
+        studentCourseRepository.save(studentCourse);
+        student.getStudentCourses().add(studentCourse);
+        courseEx.getStudentCourses().add(studentCourse);
+        studentRepository.save(student);
+        courseExRepository.save(courseEx);
+        return CommonMethod.getReturnMessage(1,"选课成功!");
+    }
+
+    public DataResponse studentCancelSelectCourse(DataRequest dataRequest){
+        Map<String, Object> map = dataRequest.getData();
+        Integer personId = CommonMethod.getInteger(map, "personId");
+        Integer courseExId = CommonMethod.getInteger(map, "courseExId");
+        if(personId==null||courseExId==null){
+            return CommonMethod.getReturnMessage(0,"信息不全");
+        }
+        Optional<Student> _student = studentRepository.findByPersonPersonId(personId);
+        Optional<CourseEx> _courseEx = courseExRepository.findById(courseExId);
+        if(_courseEx.isEmpty()||_student.isEmpty()){
+            return CommonMethod.getReturnMessage(0,"寻找时发生错误");
+        }
+        Student student = _student.get();
+        CourseEx courseEx = _courseEx.get();
+        for(StudentCourse sc : student.getStudentCourses()){
+            if(sc.getCourseEx()==courseEx){
+                student.getStudentCourses().remove(sc);
+                courseEx.getStudentCourses().remove(sc);
+                break;
+            }
+        }
+        studentRepository.save(student);
+        courseExRepository.save(courseEx);
+        return CommonMethod.getReturnMessage(1,"退课成功!");
     }
 }

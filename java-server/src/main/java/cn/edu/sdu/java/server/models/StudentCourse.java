@@ -15,26 +15,25 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode
+@Builder
 @Table(name = "student_course")
 public class StudentCourse {
-    @EmbeddedId
-    private StudentCourseId id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer studentCourseId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("personId")
+    //@MapsId("personId")
     @JoinColumn(name = "person_id")
     private Student student;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("courseExId")
+    //@MapsId("courseExId")
     @JoinColumn(name = "course_ex_id")
     private CourseEx courseEx;
 
     private LocalDateTime selectedTime;
-
-    public StudentCourse(Student student, CourseEx courseEx){
-        this.courseEx = courseEx;
-        this.student = student;
-        selectedTime = LocalDateTime.now();
-    }
 }
