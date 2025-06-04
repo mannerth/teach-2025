@@ -105,7 +105,8 @@ public class HomeworkTableController {
                 homeworkList = (ArrayList<Map>)res.getData();
             }
         }else if (roleName.equals("ROLE_STUDENT")) {
-            res = HttpRequestUtil.request("api/studentHomework/getStudentHomeworkList", req); //从后台获取所有作业列表集合
+            req.add("personId",AppStore.getJwt().getId());
+            res = HttpRequestUtil.request("/api/studentHomework/getStudentHomeworkList", req); //从后台获取所有作业列表集合
             if(res != null && res.getCode()== 0) {
                 homeworkList = (ArrayList<Map>)res.getData();
             }
@@ -190,8 +191,8 @@ public class HomeworkTableController {
         if(file == null)
             return;
 //        DataResponse res =HttpRequestUtil.uploadFile("/api/base/uploadPhoto",file.getPath(),"photo/" + homeworkId + ".jpg");  //上传保存到服务器目录/photo/主键PersonId.jpg
-        DataResponse res =HttpRequestUtil.uploadFile("/api/base/uploadPhotoBlob",file.getPath(), homeworkId+"" );  //上传保存在主键为personId的Person记录的的Photo列中
-//        DataResponse res =HttpRequestUtil.uploadFile("api/studentHomework/submitHomework",file.getPath(), homeworkId+"" );
+//        DataResponse res =HttpRequestUtil.uploadFile("/api/base/uploadPhotoBlob",file.getPath(), homeworkId+"" );  //上传保存在主键为personId的Person记录的的Photo列中
+        DataResponse res =HttpRequestUtil.uploadFile("/api/studentHomework/submitHomework",file.getPath(), AppStore.getJwt().getId()+","+homeworkId );
         if(res.getCode() == 0) {
             MessageDialog.showDialog("上传成功！");
             displayPhoto();

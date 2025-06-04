@@ -69,14 +69,22 @@ public class StudentHomeworkService {
         return CommonMethod.getReturnData(dataList);
     }
 
-    public DataResponse submitHomework(byte[] barr,String homeworkId){
+    public DataResponse submitHomework(byte[] barr, String homeworkId){
         try {
-            Optional<StudentHomework> op = 
-            if(op.isEmpty())
-                return CommonMethod.getReturnMessageError("作业不存在！");
-            Homework h = op.get();
+            String[] strings = homeworkId.split(",");
+            Integer pid = Integer.parseInt(strings[0]);
+            Integer hid = Integer.parseInt(strings[1]);
+            Optional<StudentHomework> op = studentHomeworkRepository.findByPersonHomework(pid,hid);
+            StudentHomework h;
+            if(!op.isEmpty()){
+                h = op.get();
+            }else{
+                h = new StudentHomework();
+                h.setHomework(homeworkRepository.findById(hid).orElseThrow());
+                h.setStudent(studentRepository.findByPersonPersonId(pid).orElseThrow());
+            }
             h.setPhoto(barr);
-            homeworkRepository.save(h);
+            studentHomeworkRepository.save(h);
             return CommonMethod.getReturnMessageOK();
         } catch (Exception e) {
             return CommonMethod.getReturnMessageError("上传错误");

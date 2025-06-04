@@ -11,6 +11,7 @@ import lombok.Setter;
 @Table(name = "student_homework")
 public class StudentHomework {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer studentHomeworkId;
 
     @ManyToOne
