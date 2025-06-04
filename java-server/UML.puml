@@ -1,0 +1,88 @@
+@startuml
+class Person {
+  + Integer personId (PK)
+  + String num (唯一)
+  + String name
+  + String type (0/1/2)
+  + String dept
+  + String card
+  + String gender
+  + String birthday
+  + String email
+  + String phone
+  + String address
+  + String introduce
+}
+
+class Student {
+  + Integer personId (PK)
+  + String major
+  + String className
+}
+
+class Teacher {
+  + Integer personId (PK)
+  + String title
+  + String degree
+  + Integer studentNum
+  + Date enterTime
+}
+
+class User {
+  + Integer personId (PK)
+  + String userName (唯一)
+  + String password
+  + Integer loginCount
+  + String lastLoginTime
+  + String createTime
+  + Integer creatorId
+}
+
+class UserType {
+  + Integer id (PK)
+  + String name
+}
+
+Person "1" -- "1" Student
+Person "1" -- "1" Teacher
+Person "1" -- "1" User
+User "n" -- "1" UserType
+@enduml
+
+@startuml
+class Course {
+  + Integer courseId (PK)
+  + String num
+  + String name
+  + Integer credit
+  + Course preCourse
+}
+
+class CourseEx {
+  + Integer courseExId (PK)
+  + String course_num
+  + Boolean is_choosable
+  + Integer max_stu_num
+  + String place
+  + String time_inf
+  + String information
+}
+
+class StudentCourse {
+  + Integer studentCourseId (PK)
+  + LocalDateTime selectedTime
+}
+
+class Score {
+  + Integer scoreId (PK)
+  + Integer mark
+  + Integer ranking
+}
+
+Course "n" -- "1" CourseEx
+Teacher "n" -- "1" CourseEx
+Student "1" -- "*" StudentCourse
+CourseEx "1" -- "*" StudentCourse
+Student "n" -- "1" Score
+Course "n" -- "1" Score
+@enduml
