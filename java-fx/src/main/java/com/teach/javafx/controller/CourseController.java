@@ -1,5 +1,6 @@
 package com.teach.javafx.controller;
 
+import com.teach.javafx.AppStore;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.cell.MapValueFactory;
@@ -49,6 +50,7 @@ public class CourseController {
             courseList = (List<Map<String, Object>>) res.getData();
         }
         setTableViewData();
+        AppStore.getJwt().getRole();
     }
 
     private void setTableViewData() {

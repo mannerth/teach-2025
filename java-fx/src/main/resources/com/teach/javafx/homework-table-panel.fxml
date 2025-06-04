@@ -62,10 +62,11 @@
             <columns>
                 <TableColumn fx:id="homeworkIdColumn" prefWidth="60.0" text="作业编号" />
                 <TableColumn fx:id="courseNumColumn" prefWidth="50.0" text="课程号" />
-                <TableColumn fx:id="courseNameColumn" prefWidth="140.0" text="课程名" />
+                <TableColumn fx:id="courseNameColumn" prefWidth="80.0" text="课程名" />
+                <TableColumn fx:id="courseExNumColumn" prefWidth="100.0" text="课序号" />
                 <TableColumn fx:id="homeworkReleasingTimeColumn" prefWidth="140.0" text="作业发布日期" />
                 <TableColumn fx:id="homeworkDeadlineColumn" prefWidth="140.0" text="作业截止日期" />
-                <TableColumn fx:id="contentColumn" prefWidth="240.0" text="作业内容" />
+                <TableColumn fx:id="contentColumn" prefWidth="190.0" text="作业内容" />
                 <TableColumn fx:id="editColumn" prefWidth="52.0" text="操作" />
                 <TableColumn fx:id="submitColumn" prefWidth="75.0" text="提交" />
             </columns>

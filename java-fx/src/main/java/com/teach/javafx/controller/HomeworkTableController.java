@@ -1,5 +1,6 @@
 package com.teach.javafx.controller;
 
+import com.teach.javafx.AppStore;
 import com.teach.javafx.MainApplication;
 import com.teach.javafx.controller.base.MessageDialog;
 import com.teach.javafx.request.HttpRequestUtil;
@@ -23,14 +24,6 @@ import javafx.stage.Stage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +38,8 @@ public class HomeworkTableController {
     private TableColumn<Map, String> courseNameColumn;
     @FXML
     private TableColumn<Map, String> courseNumColumn;
+    @FXML
+    private TableColumn<Map, String> courseExNumColumn;
     @FXML
     private TableColumn<Map, String> homeworkReleasingTimeColumn;
     @FXML
@@ -68,6 +63,13 @@ public class HomeworkTableController {
 
     private List<OptionItem> courseList;
 
+    private List<OptionItem> studentList;
+
+    @FXML
+    private ComboBox<OptionItem> courseExComboBox;
+
+    private List<OptionItem> courseExList;
+
     private HomeworkEditController homeworkEditController = null;
     private Stage stage = null;
 
@@ -78,8 +80,17 @@ public class HomeworkTableController {
         return courseList;
     }
 
+    public List<OptionItem> getCourseExList() {
+        return courseExList;
+    }
+
+    public List<OptionItem> getCourseExListByCourseId(Integer courseId) {
+        return courseExList;
+    }
+
     @FXML
     private void onQueryButtonClick(){
+        String roleName = AppStore.getJwt().getRole();
         Integer courseId = 0;
         OptionItem op;
         op = courseComboBox.getSelectionModel().getSelectedItem();
@@ -88,37 +99,50 @@ public class HomeworkTableController {
         DataResponse res;
         DataRequest req = new DataRequest();
         req.add("courseId",courseId);
-        res = HttpRequestUtil.request("/api/homework/getHomeworkList",req); //从后台获取所有作业列表集合
-        if(res != null && res.getCode()== 0) {
-            homeworkList = (ArrayList<Map>)res.getData();
+        if(roleName.equals("ROLE_TEACHER") || roleName.equals("ROLE_ADMIN")) {
+            res = HttpRequestUtil.request("/api/homework/getHomeworkList", req); //从后台获取所有作业列表集合
+            if(res != null && res.getCode()== 0) {
+                homeworkList = (ArrayList<Map>)res.getData();
+            }
+        }else if (roleName.equals("ROLE_STUDENT")) {
+            res = HttpRequestUtil.request("api/studentHomework/getStudentHomeworkList", req); //从后台获取所有作业列表集合
+            if(res != null && res.getCode()== 0) {
+                homeworkList = (ArrayList<Map>)res.getData();
+            }
         }
+
         setTableViewData();
     }
 
     private void setTableViewData() {
+        String roleName = AppStore.getJwt().getRole();
         observableList.clear();
         Map map;
         Button editButton;
         for (int j = 0; j < homeworkList.size(); j++) {
             map = homeworkList.get(j);
-            editButton = new Button("编辑");
-            editButton.setId("edit"+j);
-            editButton.setOnAction(e->{
-                editItem(((Button)e.getSource()).getId());
-            });
-            map.put("edit",editButton);
+            if(roleName.equals("ROLE_TEACHER")) {
+                editButton = new Button("编辑");
+                editButton.setId("edit" + j);
+                editButton.setOnAction(e -> {
+                    editItem(((Button) e.getSource()).getId());
+                });
+                map.put("edit", editButton);
+            }
 
-            Button submitButton = new Button("提交作业");
-            // 直接将 homeworkId 存储到按钮的属性中
-            submitButton.getProperties().put("homeworkId", map.get("homeworkId"));
-            Map finalMap = map;
-            submitButton.setOnAction(e -> {
-                // 从按钮的属性中获取 homeworkId
-                int homeworkId = Integer.parseInt(finalMap.get("homeworkId").toString());
-                this.homeworkId = homeworkId; // 设置当前作业的 homeworkId
-                onPhotoButtonClick(); // 调用 onPhotoButtonClick 方法
-            });
-            map.put("submit", submitButton);
+            if(roleName.equals("ROLE_STUDENT")) {
+                Button submitButton = new Button("提交作业");
+                // 直接将 homeworkId 存储到按钮的属性中
+                submitButton.getProperties().put("homeworkId", map.get("homeworkId"));
+                Map finalMap = map;
+                submitButton.setOnAction(e -> {
+                    // 从按钮的属性中获取 homeworkId
+                    int homeworkId = Integer.parseInt(finalMap.get("homeworkId").toString());
+                    this.homeworkId = homeworkId; // 设置当前作业的 homeworkId
+                    onPhotoButtonClick(); // 调用 onPhotoButtonClick 方法
+                });
+                map.put("submit", submitButton);
+            }
 
 
             observableList.addAll(FXCollections.observableArrayList(map));
@@ -137,19 +161,8 @@ public class HomeworkTableController {
         stage.showAndWait();
     }
 
-//    public void displayPhoto(){
-//        DataRequest req = new DataRequest();
-//        req.add("fileName", "photo/" + homeworkId + ".jpg");  //个人照片显示
-//        byte[] bytes = HttpRequestUtil.requestByteData("/api/base/getFileByteData", req);
-//        if (bytes != null) {
-//            ByteArrayInputStream in = new ByteArrayInputStream(bytes);
-//            Image img = new Image(in);
-//            photoImageView.setImage(img);
-//        }
-//
-//    }
-
     public void displayPhoto(){
+
         DataRequest req = new DataRequest();
 //        req.add("fileName", "photo/" + homeworkId + ".jpg");  //个人照片显示
 //        byte[] bytes = HttpRequestUtil.requestByteData("/api/base/getFileByteData", req);  // 从后端服务器指定木下读取文件
@@ -158,7 +171,10 @@ public class HomeworkTableController {
         if (bytes != null) {
             ByteArrayInputStream in = new ByteArrayInputStream(bytes);
             Image img = new Image(in);
+
             photoImageView.setImage(img);
+        }else {
+            photoImageView.setImage(null);
         }
 
     }
@@ -175,6 +191,7 @@ public class HomeworkTableController {
             return;
 //        DataResponse res =HttpRequestUtil.uploadFile("/api/base/uploadPhoto",file.getPath(),"photo/" + homeworkId + ".jpg");  //上传保存到服务器目录/photo/主键PersonId.jpg
         DataResponse res =HttpRequestUtil.uploadFile("/api/base/uploadPhotoBlob",file.getPath(), homeworkId+"" );  //上传保存在主键为personId的Person记录的的Photo列中
+//        DataResponse res =HttpRequestUtil.uploadFile("api/studentHomework/submitHomework",file.getPath(), homeworkId+"" );
         if(res.getCode() == 0) {
             MessageDialog.showDialog("上传成功！");
             displayPhoto();
@@ -190,15 +207,34 @@ public class HomeworkTableController {
         homeworkIdColumn.setCellValueFactory(new MapValueFactory<>("homeworkId"));
         courseNameColumn.setCellValueFactory(new MapValueFactory<>("courseName"));
         courseNumColumn.setCellValueFactory(new MapValueFactory<>("courseNum"));
+        courseExNumColumn.setCellValueFactory(new MapValueFactory<>("course_num"));
         homeworkReleasingTimeColumn.setCellValueFactory(new MapValueFactory<>("homeworkReleasingTime"));
         homeworkDeadlineColumn.setCellValueFactory(new MapValueFactory<>("homeworkDeadline"));
         contentColumn.setCellValueFactory(new MapValueFactory<>("content"));
         editColumn.setCellValueFactory(new MapValueFactory<>("edit"));
         submitColumn.setCellValueFactory(new MapValueFactory<>("submit"));
 
+        // 获取用户信息
+        String roleName = AppStore.getJwt().getRole();
+        if (roleName.equals("ROLE_STUDENT")) {
+            // 如果是学生，只显示提交作业列
+            editColumn.setVisible(false);
+            submitColumn.setVisible(true);
+        } else if (roleName.equals("ROLE_TEACHER")) {
+            // 如果是学生，隐藏编辑列和提交列
+            editColumn.setVisible(true);
+            submitColumn.setVisible(false);
+        } else if (roleName.equals("ROLE_ADMIN")) {
+            // 如果是管理员，全部不可见
+            editColumn.setVisible(false);
+            submitColumn.setVisible(false);
+        }
+
+
         DataRequest req = new DataRequest();
 
-        courseList = HttpRequestUtil.requestOptionItemList("/api/homework/getCourseItemOptionList",req);
+        courseList = HttpRequestUtil.requestOptionItemList("/api/homework/getCourseItemOptionList", req);
+
         OptionItem item = new OptionItem(null,"0","请选择");
 
         courseComboBox.getItems().addAll(item);
@@ -225,14 +261,13 @@ public class HomeworkTableController {
             }
         });
 
-
         onQueryButtonClick();
     }
 
     private void initDialog() {
         if(stage!= null)
             return;
-        FXMLLoader fxmlLoader ;
+        FXMLLoader fxmlLoader;
         Scene scene = null;
         try {
             fxmlLoader = new FXMLLoader(MainApplication.class.getResource("homework-edit-dialog.fxml"));
@@ -269,6 +304,12 @@ public class HomeworkTableController {
             return;
         }
 
+        Integer courseExId = CommonMethod.getInteger(data,"courseExId");
+//        if(courseExId == null) {
+//            MessageDialog.showDialog("没有选中课序号不能添加保存！");
+//            return;
+//        }
+
         String content = CommonMethod.getString(data, "content");
         if(content.isEmpty()) {
             MessageDialog.showDialog("作业内容不能为空，请添加！");
@@ -294,6 +335,7 @@ public class HomeworkTableController {
 
         DataRequest req = new DataRequest();
         req.add("courseId",courseId);
+        req.add("courseExId",courseExId);
         req.add("homeworkId",CommonMethod.getInteger(data,"homeworkId"));
         req.add("content",content);
         req.add("releasingTime",CommonMethod.getString(data, "homeworkReleasingTime"));

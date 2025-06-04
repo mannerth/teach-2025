@@ -165,6 +165,23 @@ public class CourseExService {
         return new OptionItemList(0,ret);
     }
 
+    /// 请求参数 课程：courseId     教师号： teacherNum
+    public OptionItemList getCourseExOptionItemList(DataRequest dataRequest){
+        Map map = dataRequest.getData();
+//        Integer courseExId = CommonMethod.getInteger(map, "courseExId");
+        Integer courseId = CommonMethod.getInteger(map, "courseId");
+        String num = CommonMethod.getString(map, "teacherNum");
+        if(courseId == null) courseId = 0;
+        List<CourseEx> list1 ;
+//        List<CourseEx> list2 = new ArrayList<>();
+        list1 = courseExRepository.findCourseByTeacherCourseId(courseId, num, null);
+        List<OptionItem> ret = new ArrayList<>();
+        for( CourseEx i : list1){
+            ret.add(new OptionItem(i.getCourseExId(), i.getCourseExId().toString(), i.getCourse_num()+"-"+i.getTeacher().getPerson().getName()));
+        }
+        return new OptionItemList(0, ret);
+    }
+
     /// 学生获取已经选的课程
     public DataResponse getSelectedCourse(DataRequest dataRequest){
         Map<String, Object> map = dataRequest.getData();
