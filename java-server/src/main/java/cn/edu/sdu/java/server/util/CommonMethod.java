@@ -3,6 +3,7 @@ package cn.edu.sdu.java.server.util;
 import cn.edu.sdu.java.server.payload.response.DataResponse;
 import cn.edu.sdu.java.server.services.UserDetailsImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.catalina.security.SecurityUtil;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
@@ -57,6 +58,13 @@ public class CommonMethod {
         if(!(obj instanceof UserDetailsImpl userDetails))
             return null;
         return userDetails.getUsername();
+    }
+    public static String getRoleName() {
+        Object obj = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(!(obj instanceof UserDetailsImpl userDetails)) {
+            return null;
+        }
+        return userDetails.getAuthorities().iterator().next().toString();
     }
 
     public static String getNextNum2(String num) {
