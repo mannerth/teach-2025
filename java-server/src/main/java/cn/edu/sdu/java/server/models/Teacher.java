@@ -5,6 +5,7 @@ package cn.edu.sdu.java.server.models;
  * *@Date：2025/6/4  1:27
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 
@@ -21,6 +22,7 @@ public class Teacher {
 
     @OneToOne
     @JoinColumn(name="personId")
+    @JsonIgnore
     private Person person;
 
     @Size(max = 20)
