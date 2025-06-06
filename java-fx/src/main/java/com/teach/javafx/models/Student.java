@@ -1,6 +1,8 @@
 package com.teach.javafx.models;
 
 
+import com.teach.javafx.util.CommonMethod;
+import java.util.*;
 public class Student {
     private Integer personId;
     private String num;
@@ -25,6 +27,23 @@ public class Student {
         this.name = name;
     }
 
+    public Student(Map m){
+        this.personId = CommonMethod.getInteger(m,"personId");
+        this.num = CommonMethod.getString(m, "num");
+        this.name = CommonMethod.getString(m,"name");
+        this.className = CommonMethod.getString(m, "className");
+        //this.gender = CommonMethod.getInteger(m, "gender");
+        this.genderName = CommonMethod.getString(m, "genderName");
+        //this.birthday = CommonMethod.getLocalDateFromString(CommonMethod.getString(m,"birthday"), CommonMethod.DATE_FORMAT);
+        this.email = CommonMethod.getString(m, "email");
+        this.phone = CommonMethod.getString(m, "phone");
+        this.address = CommonMethod.getString(m, "address");
+        this.introduce = CommonMethod.getString(m, "introduce");
+        this.major = CommonMethod.getString(m, "major");
+        this.type = CommonMethod.getString(m, "type");
+        this.dept = CommonMethod.getString(m, "dept");
+        this.card = CommonMethod.getString(m, "card");
+    }
 
     public String getMajor() {
         return major;

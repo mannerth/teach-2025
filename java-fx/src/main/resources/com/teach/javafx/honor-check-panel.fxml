@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.teach.javafx.controller.HonorCheckController"
+            prefHeight="400.0" prefWidth="600.0"
+            fx:id="borderPane">
+    <top>
+        <HBox spacing="10" >
+            <BorderPane.margin>
+                <Insets top="10" bottom="10" left="10" right="10" />
+            </BorderPane.margin>
+            <Button fx:id="bTitle" text="荣誉称号" onAction="#onFilterButtonClick" prefWidth="100" prefHeight="60" style="-fx-font-size:17px;"/>
+            <Button fx:id="bContest" text="学科竞赛" onAction="#onFilterButtonClick" prefWidth="100" prefHeight="60" style="-fx-font-size:17px;"/>
+            <Button fx:id="bTech" text="科技成果" onAction="#onFilterButtonClick" prefWidth="100" prefHeight="60" style="-fx-font-size:17px;"/>
+            <Button fx:id="bPractice" text="社会实践" onAction="#onFilterButtonClick" prefWidth="100" prefHeight="60" style="-fx-font-size:17px;"/>
+            <Button fx:id="bLecture" text="培训讲座" onAction="#onFilterButtonClick" prefWidth="100" prefHeight="60" style="-fx-font-size:17px;"/>
+            <Button fx:id="bProj" text="创新项目" onAction="#onFilterButtonClick" prefWidth="100" prefHeight="60" style="-fx-font-size:17px;"/>
+            <Button fx:id="bInternship" text="校外实习" onAction="#onFilterButtonClick" prefWidth="100" prefHeight="60" style="-fx-font-size:17px;"/>
+        </HBox>
+    </top>
+    <center>
+        <ScrollPane>
+            <GridPane fx:id="gridPane" vgap="20" hgap="30"  style="-fx-font-size:15px;">
+                <padding>
+                    <Insets top="30" bottom="30" left="30" right="30"/>
+                </padding>
+            </GridPane>
+        </ScrollPane>
+
+    </center>
+
+</BorderPane>
