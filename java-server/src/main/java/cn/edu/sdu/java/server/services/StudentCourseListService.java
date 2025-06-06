@@ -38,17 +38,43 @@ public class StudentCourseListService {
         String time = dataRequest.getString("time");        //获取信息
         String content = dataRequest.getString("content");
         int id = dataRequest.getInteger("personId");
-        StudentCourseList studentCourseList = getTheObject(id); //请求对象
+        return addCourse(id, time, content);
+    }
+
+    /// 添加课表的封装函数
+    public DataResponse addCourse(Integer personId , String time, String content){
+        StudentCourseList studentCourseList = getTheObject(personId); //请求对象
         Map<String, String> map = getMapFromString(studentCourseList.getCourseList());
-        map.put(time,content);                                  //添加信息
+        String subTime = time.substring(0,2);
+        for(var i : map.keySet()){          //判断是否有时间冲突
+            String temp = i.substring(0,2);
+            if(temp.equals(subTime)){       //初判时间节次
+                if(time.length()==2){       //时间为全部则一定冲突
+                    return CommonMethod.getReturnMessage(1,"课程时间冲突！");
+                }
+                String[] newWeek = time.substring(3).split("-");
+                int oldBeg, oldEnd, newBeg = Integer.parseInt(newWeek[0]), newEnd = Integer.parseInt(newWeek[1]);
+                if(i.length()==2){
+                    oldBeg = 1;
+                    oldEnd = 20;
+                }else{//12,1-2
+                    String[] week = i.substring(3).split("-");
+                    oldBeg = Integer.parseInt(week[0]);
+                    oldEnd = Integer.parseInt(week[1]);
+                }
+                if(!(oldBeg>newEnd||oldEnd<newBeg)){
+                    return CommonMethod.getReturnMessage(1,"课程时间冲突！");
+                }
+            }
+        }
+        map.put(time, content);
         String temp = getStringFromMap(map);
         if(temp == null){
             return CommonMethod.getReturnMessageError("服务端错误20");
         }
         studentCourseList.setCourseList(temp);
-        ObjectMapper objectMapper = new ObjectMapper();         //转为json存储
         studentCourseListRepository.saveAndFlush(studentCourseList);//保存
-        return CommonMethod.getReturnMessage(200,"添加成功");
+        return CommonMethod.getReturnMessage(0, "添加课表成功！");
     }
 
     /// 删除课表

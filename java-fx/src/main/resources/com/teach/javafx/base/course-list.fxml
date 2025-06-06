@@ -19,6 +19,8 @@
                 <Label minWidth="5" prefWidth="10"/>
                 <Button prefHeight="30" onAction="#delete" text="删除"/>
                 <Label minWidth="5" prefWidth="10"/>
+                <Button prefHeight="30" onAction="#refresh" text="刷新课表" />
+                <Label minWidth="5" prefWidth="10"/>
                 <Label fx:id="testU" text="春风得意马蹄疾，不信人间有别离"/>
             </children>
         </HBox>
