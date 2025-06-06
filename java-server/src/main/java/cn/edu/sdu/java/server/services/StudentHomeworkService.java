@@ -12,12 +12,18 @@ import cn.edu.sdu.java.server.repositorys.StudentHomeworkRepository;
 import cn.edu.sdu.java.server.repositorys.StudentRepository;
 import cn.edu.sdu.java.server.util.CommonMethod;
 import cn.edu.sdu.java.server.util.DateTimeTool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.util.*;
 
 @Service
 public class StudentHomeworkService {
+    private static final Logger log = LoggerFactory.getLogger(StudentHomeworkService.class);
     private final StudentHomeworkRepository studentHomeworkRepository;
     private final CourseRepository courseRepository;
     private final CourseExService courseExService;
@@ -91,4 +97,31 @@ public class StudentHomeworkService {
         }
     }
 
+    public ResponseEntity<StreamingResponseBody> getBlobByteDataByStudentHomework(DataRequest dataRequest) {
+        Integer studentId = dataRequest.getInteger("studentId");
+        Integer homeworkId = dataRequest.getInteger("homeworkId");
+
+        try {
+            byte [] data;
+            Optional<StudentHomework> op = studentHomeworkRepository.findByPersonHomework(studentId, homeworkId);
+            if(op.isPresent()) {
+                StudentHomework sh = op.get();
+                data = sh.getPhoto();
+                if(data == null)
+                    return ResponseEntity.notFound().build();
+            }else {
+                return ResponseEntity.internalServerError().build();
+            }
+            MediaType mType = new MediaType(MediaType.APPLICATION_OCTET_STREAM);
+            StreamingResponseBody stream = outputStream -> {
+                outputStream.write(data);
+            };
+            return ResponseEntity.ok()
+                    .contentType(mType)
+                    .body(stream);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return ResponseEntity.internalServerError().build();
+    }
 }

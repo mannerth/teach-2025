@@ -6,7 +6,9 @@ import cn.edu.sdu.java.server.services.BaseService;
 import cn.edu.sdu.java.server.services.StudentHomeworkService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -32,5 +34,10 @@ public class StudentHomeworkController {
                                         @RequestParam(name = "remoteFile") String homeworkId,
                                         @RequestParam(name = "fileName") String fileName) {
         return studentHomeworkService.submitHomework(barr, homeworkId);
+    }
+
+    @PostMapping("/getBlobByteDataByStudentHomework")
+    public ResponseEntity<StreamingResponseBody> getBlobByteDataByStudentHomework(@Valid @RequestBody DataRequest dataRequest) {
+        return studentHomeworkService.getBlobByteDataByStudentHomework(dataRequest);
     }
 }

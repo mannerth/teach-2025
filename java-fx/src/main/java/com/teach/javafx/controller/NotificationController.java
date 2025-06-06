@@ -1,5 +1,6 @@
 package com.teach.javafx.controller;
 
+import com.teach.javafx.AppStore;
 import com.teach.javafx.controller.base.MessageDialog;
 import com.teach.javafx.controller.base.ToolController;
 import com.teach.javafx.request.DataRequest;
@@ -11,9 +12,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.MapValueFactory;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -22,6 +29,20 @@ import java.util.Map;
 
 public class NotificationController extends ToolController {
     private ImageView photoImageView;
+
+
+    @FXML
+    private HBox hBox;
+
+    @FXML
+    private FlowPane flowPane;
+
+    @FXML
+    private SplitPane splitPane;
+    @FXML
+    private VBox vBox;
+
+
     @FXML
     private TableView<Map> dataTableView;  //通知信息表
     @FXML
@@ -36,6 +57,7 @@ public class NotificationController extends ToolController {
 
     @FXML
     private TextField titleField; //通知信息  主题输入域
+
 
 
     @FXML
@@ -64,6 +86,7 @@ public class NotificationController extends ToolController {
 
     @FXML
     public void initialize() {
+        String roleName = AppStore.getJwt().getRole();
         photoImageView = new ImageView();
         photoImageView.setFitHeight(100);
         photoImageView.setFitWidth(100);
@@ -78,12 +101,17 @@ public class NotificationController extends ToolController {
         numColumn.setCellValueFactory(new MapValueFactory<>("num"));  //设置列值工程属性
         dateColumn.setCellValueFactory(new MapValueFactory<>("releaseTime"));
         titleColumn.setCellValueFactory(new MapValueFactory<>("title"));
+        if(roleName.equals("ROLE_STUDENT") || roleName.equals("ROLE_TEACHER")) {
+            hBox.getChildren().remove(flowPane);
+            splitPane.getItems().remove(vBox);
+        }
 
         TableView.TableViewSelectionModel<Map> tsm = dataTableView.getSelectionModel();
         ObservableList<Integer> list = tsm.getSelectedIndices();
         list.addListener(this::onTableRowSelect);
         setTableViewData();
     }
+
 
     /**
      * 清除通知表单中输入信息
