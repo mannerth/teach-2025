@@ -17,9 +17,14 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.MapValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import jdk.incubator.vector.VectorOperators;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -74,7 +79,24 @@ public class HomeworkTableController {
     private Stage stage = null;
 
     @FXML
+    private FlowPane flowPane;
+
+    @FXML
     private ImageView photoImageView;
+
+    @FXML
+    private VBox VBox;
+
+    @FXML
+    private Text studentOneText;
+
+    @FXML
+    private Text studentTwoText;
+
+    @FXML
+    private ImageView studentOnePhotoImageView;
+    @FXML
+    private ImageView studentTwoPhotoImageView;
 
     public List<OptionItem> getCourseList() {
         return courseList;
@@ -163,21 +185,22 @@ public class HomeworkTableController {
     }
 
     public void displayPhoto(){
+        String roleName = AppStore.getJwt().getRole();
 
-        DataRequest req = new DataRequest();
-//        req.add("fileName", "photo/" + homeworkId + ".jpg");  //个人照片显示
-//        byte[] bytes = HttpRequestUtil.requestByteData("/api/base/getFileByteData", req);  // 从后端服务器指定木下读取文件
-        req.add("homeworkId", homeworkId +"");  //个人照片显示
-        byte[] bytes = HttpRequestUtil.requestByteData("/api/base/getBlobByteData", req);  //从后端person表里读取图片
-        if (bytes != null) {
-            ByteArrayInputStream in = new ByteArrayInputStream(bytes);
-            Image img = new Image(in);
+        if(roleName.equals("ROLE_STUDENT")) {
+            DataRequest req = new DataRequest();
+            req.add("homeworkId", homeworkId +"");
+            req.add("studentId", AppStore.getJwt().getId() + "");
+            byte[] bytes = HttpRequestUtil.requestByteData("/api/studentHomework/getBlobByteDataByStudentHomework", req);
+            if (bytes != null) {
+                ByteArrayInputStream in = new ByteArrayInputStream(bytes);
+                Image img = new Image(in);
 
-            photoImageView.setImage(img);
-        }else {
-            photoImageView.setImage(null);
+                photoImageView.setImage(img);
+            }else {
+                photoImageView.setImage(null);
+            }
         }
-
     }
 
     @FXML
@@ -221,14 +244,17 @@ public class HomeworkTableController {
             // 如果是学生，只显示提交作业列
             editColumn.setVisible(false);
             submitColumn.setVisible(true);
+            flowPane.setVisible(false);
         } else if (roleName.equals("ROLE_TEACHER")) {
             // 如果是学生，隐藏编辑列和提交列
             editColumn.setVisible(true);
             submitColumn.setVisible(false);
+            flowPane.setVisible(true);
         } else if (roleName.equals("ROLE_ADMIN")) {
             // 如果是管理员，全部不可见
             editColumn.setVisible(false);
             submitColumn.setVisible(false);
+            flowPane.setVisible(true);
         }
 
 
@@ -244,25 +270,57 @@ public class HomeworkTableController {
         dataTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 
-        // 添加鼠标点击事件监听器
-        dataTableView.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 1) { // 单击事件
-                Map selectedHomework = dataTableView.getSelectionModel().getSelectedItem();
-                if (selectedHomework != null) {
-                    Object homeworkIdObj = selectedHomework.get("homeworkId");
-                    if (homeworkIdObj instanceof Integer) {
-                        this.homeworkId = (int) homeworkIdObj;
-                    } else if (homeworkIdObj instanceof String) {
-                        this.homeworkId = Integer.parseInt((String) homeworkIdObj);
-                    } else {
-                        System.err.println("homeworkId is not a valid type");
+        if (roleName.equals("ROLE_STUDENT")) {
+            VBox.getChildren().remove(studentOneText);
+            VBox.getChildren().remove(studentOnePhotoImageView);
+            VBox.getChildren().remove(studentTwoText);
+            VBox.getChildren().remove(studentTwoPhotoImageView);
+
+
+            dataTableView.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 1) { // 单击事件
+                    Map selectedHomework = dataTableView.getSelectionModel().getSelectedItem();
+                    if (selectedHomework != null) {
+                        Object homeworkIdObj = selectedHomework.get("homeworkId");
+                        if (homeworkIdObj instanceof Integer) {
+                            this.homeworkId = (int) homeworkIdObj;
+                        } else if (homeworkIdObj instanceof String) {
+                            this.homeworkId = Integer.parseInt((String) homeworkIdObj);
+                        } else {
+                            System.err.println("homeworkId is not a valid type");
+                        }
+                        displayPhoto(); // 调用 displayPhoto 方法
                     }
-                    displayPhoto(); // 调用 displayPhoto 方法
                 }
-            }
-        });
+            });
+        } else if (roleName.equals("ROLE_TEACHER") || roleName.equals("ROLE_ADMIN")) {
+            VBox.getChildren().remove(photoImageView);
+//            borderPane.getChildren().remove(photoImageView);
+            dataTableView.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 1) { // 单击事件
+                    Map selectedHomework = dataTableView.getSelectionModel().getSelectedItem();
+                    if (selectedHomework != null) {
+                        Object homeworkIdObj = selectedHomework.get("homeworkId");
+                        if (homeworkIdObj instanceof Integer) {
+                            this.homeworkId = (int) homeworkIdObj;
+                        } else if (homeworkIdObj instanceof String) {
+                            this.homeworkId = Integer.parseInt((String) homeworkIdObj);
+                        } else {
+                            System.err.println("homeworkId is not a valid type");
+                        }
+                        displayStudentOnePhoto();
+                        displayStudentTwoPhoto();
+                    }
+                }
+            });
+        } else if (roleName.equals("ROLE_ADMIN")) {
+
+        }
+
 
         onQueryButtonClick();
+
+
     }
 
     private void initDialog() {
@@ -272,7 +330,7 @@ public class HomeworkTableController {
         Scene scene = null;
         try {
             fxmlLoader = new FXMLLoader(MainApplication.class.getResource("homework-edit-dialog.fxml"));
-            scene = new Scene(fxmlLoader.load(), 260, 140);
+            scene = new Scene(fxmlLoader.load(), 260, 260);
             stage = new Stage();
             stage.initOwner(MainApplication.getMainStage());
             stage.initModality(Modality.NONE);
@@ -306,10 +364,10 @@ public class HomeworkTableController {
         }
 
         Integer courseExId = CommonMethod.getInteger(data,"courseExId");
-//        if(courseExId == null) {
-//            MessageDialog.showDialog("没有选中课序号不能添加保存！");
-//            return;
-//        }
+        if(courseExId == null) {
+            MessageDialog.showDialog("没有选中课序号不能添加保存！");
+            return;
+        }
 
         String content = CommonMethod.getString(data, "content");
         if(content.isEmpty()) {
@@ -394,6 +452,39 @@ public class HomeworkTableController {
         }
         else {
             MessageDialog.showDialog(res.getMsg());
+        }
+    }
+
+
+    // 添加两个方法分别用于加载学生一和学生二的作业图片
+    public void displayStudentOnePhoto() {
+        displayPhotoForStudent(2); // 假设学生一的 ID 为 2
+    }
+
+    public void displayStudentTwoPhoto() {
+        displayPhotoForStudent(3); // 假设学生二的 ID 为 3
+    }
+
+    // 通用方法用于根据学生 ID 加载作业图片
+    private void displayPhotoForStudent(int studentId) {
+        DataRequest req = new DataRequest();
+        req.add("homeworkId", homeworkId + "");
+        req.add("studentId", studentId + "");
+        byte[] bytes = HttpRequestUtil.requestByteData("/api/studentHomework/getBlobByteDataByStudentHomework", req);
+        if (bytes != null) {
+            ByteArrayInputStream in = new ByteArrayInputStream(bytes);
+            Image img = new Image(in);
+            if (studentId == 2) {
+                studentOnePhotoImageView.setImage(img);
+            } else if (studentId == 3) {
+                studentTwoPhotoImageView.setImage(img);
+            }
+        } else {
+            if (studentId == 2) {
+                studentOnePhotoImageView.setImage(null);
+            } else if (studentId == 3) {
+                studentTwoPhotoImageView.setImage(null);
+            }
         }
     }
 }
