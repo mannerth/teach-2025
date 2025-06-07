@@ -1,0 +1,257 @@
+@startuml
+skinparam monochrome true
+
+class Person {
+    - Integer personId
+    - String num
+    - String name
+    - String type
+    - String dept
+    - String card
+    - String gender
+    - String birthday
+    - String email
+    - String phone
+    - String address
+    - String introduce
+}
+
+class Student {
+    - Integer personId
+    - String major
+    - String className
+}
+
+class Teacher {
+    - Integer personId
+    - String title
+}
+
+class User {
+    - Integer personId
+    - UserType userType
+    - String userName
+    - String password
+    - Integer loginCount
+    - String lastLoginTime
+    - String createTime
+    - Integer creatorId
+}
+
+class UserType {
+    - Integer id
+    - String name
+}
+
+class Course {
+    - Integer courseId
+    - String num
+    - String name
+    - Integer credit
+    - Course preCourse
+    - String coursePath
+}
+
+class CourseEx {
+    - Integer courseExId
+    - String course_num
+    - Boolean is_choosable
+    - Integer max_stu_num
+    - String place
+    - String time_inf
+    - String information
+}
+
+class StudentCourse {
+    - Integer studentCourseId
+    - LocalDateTime selectedTime
+}
+
+class StudentCourseId {
+    - Integer personId
+    - Integer courseExId
+}
+
+class Score {
+    - Integer scoreId
+    - Integer mark
+    - Integer ranking
+}
+
+class Homework {
+    - Integer homeworkId
+    - String content
+    - Date homeworkReleasingTime
+    - Date homeworkDeadline
+    - byte[] photo
+}
+
+class StudentHomework {
+    - Integer studentHomeworkId
+    - byte[] photo
+}
+
+class HonorType {
+    - Integer honorTypeId
+    - EHonorType type
+}
+
+class Honor {
+    - Integer honorId
+    - String honorContent
+}
+
+class StudentLeave {
+    - Integer leaveId
+    - String name
+    - String className
+    - Date startdate
+    - Date enddate
+    - String reason
+}
+
+class StudentStatistics {
+    - Integer statisticsId
+    - Integer courseCount
+    - Integer creditTotal
+    - Double avgScore
+    - Double gpa
+    - Integer activeCount
+}
+
+class RequestLog {
+    - Integer id
+    - String url
+    - String username
+    - String startTime
+    - Double requestTime
+}
+
+class ModifyLog {
+    - Integer id
+    - String type
+    - String tableName
+    - String info
+    - String operateTime
+    - Integer operatorId
+}
+
+class Notification {
+    - Integer notificationId
+    - String num
+    - String title
+    - String releaseTime
+}
+
+class Fee {
+    - Integer feeId
+    - String day
+    - Double money
+}
+
+class DictionaryInfo {
+    - Integer id
+    - Integer pid
+    - String value
+    - String label
+}
+
+class MenuInfo {
+    - Integer id
+    - String userTypeIds
+    - Integer pid
+    - String name
+    - String title
+}
+
+class FamilyMember {
+    - Integer memberId
+    - String relation
+    - String name
+    - String gender
+    - Integer age
+    - String unit
+}
+
+class SystemInfo {
+    - Integer id
+    - String name
+    - String value
+    - String des
+}
+
+class StatisticsDay {
+    - String day
+    - Integer loginCount
+    - Integer requestCount
+    - Integer createCount
+    - Integer modifyCount
+}
+
+enum EUserType {
+    ROLE_ADMIN
+    ROLE_STUDENT
+    ROLE_TEACHER
+}
+
+enum EHonorType {
+    HONOR_TITLE
+    HONOR_CONTEST
+    HONOR_PRACTICE
+    HONOR_TECH
+    HONOR_LECTURE
+    HONOR_INTERNSHIP
+    HONOR_PROJ
+}
+
+
+Person "1" -- "1" Student : is a
+Person "1" -- "1" Teacher : is a
+Person "1" -- "1" User : has a
+User "1" -- "1" UserType : belongs to
+Student "n" -- "n" CourseEx : selects through StudentCourse
+StudentCourse "1" -- "1" StudentCourseId : has a
+Student "1" -- "n" Score : has scores
+Student "1" -- "n" Homework : has homework
+Student "1" -- "n" StudentHomework : has submitted homework
+Student "1" -- "n" Honor : has honors
+Student "1" -- "n" StudentLeave : has leaves
+Student "1" -- "1" StudentStatistics : has statistics
+Student "1" -- "n" FamilyMember : has family members
+Course "1" -- "n" CourseEx : has extensions
+CourseEx "1" -- "n" StudentCourse : has enrollments
+Honor "1" -- "1" HonorType : has a type
+Fee "n" -- "1" Student : belongs to
+StudentCourseList "1" -- "1" Person : related to
+StudentCourseList "1" -- "n" CourseEx : contains courses
+
+
+RequestLog "1" -- "1" User : records user's request
+ModifyLog "1" -- "1" User : records user's modification
+
+
+note right of Person: 人员表实体类
+note right of Student: 学生表实体类
+note right of Teacher: 教师表实体类
+note right of User: 用户表实体类
+note right of UserType: 用户类型表实体类
+note right of Course: 课程表实体类
+note right of CourseEx: 课程扩展表实体类
+note right of StudentCourse: 学生选课表实体类
+note right of Score: 成绩表实体类
+note right of Homework: 作业表实体类
+note right of StudentHomework: 学生作业表实体类
+note right of Honor: 荣誉表实体类
+note right of StudentLeave: 学生请假表实体类
+note right of StudentStatistics: 学生统计信息表实体类
+note right of RequestLog: 请求日志表实体类
+note right of ModifyLog: 修改日志表实体类
+note right of Notification: 通知表实体类
+note right of Fee: 消费流水表实体类
+note right of DictionaryInfo: 数据字典表实体类
+note right of MenuInfo: 菜单表实体类
+note right of FamilyMember: 家庭成员表实体类
+note right of SystemInfo: 系统信息表实体类
+note right of StatisticsDay: 每日统计信息表实体类
+
+@enduml
