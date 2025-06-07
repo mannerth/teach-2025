@@ -3,6 +3,7 @@ package cn.edu.sdu.java.server.services;
 import cn.edu.sdu.java.server.models.Course;
 import cn.edu.sdu.java.server.models.CourseEx;
 import cn.edu.sdu.java.server.models.Homework;
+import cn.edu.sdu.java.server.models.StudentHomework;
 import cn.edu.sdu.java.server.payload.request.DataRequest;
 import cn.edu.sdu.java.server.payload.response.DataResponse;
 import cn.edu.sdu.java.server.payload.response.OptionItem;
@@ -10,8 +11,10 @@ import cn.edu.sdu.java.server.payload.response.OptionItemList;
 import cn.edu.sdu.java.server.repositorys.CourseExRepository;
 import cn.edu.sdu.java.server.repositorys.CourseRepository;
 import cn.edu.sdu.java.server.repositorys.HomeworkRepository;
+import cn.edu.sdu.java.server.repositorys.StudentHomeworkRepository;
 import cn.edu.sdu.java.server.util.CommonMethod;
 import cn.edu.sdu.java.server.util.DateTimeTool;
+import lombok.Data;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -21,11 +24,13 @@ public class HomeworkService {
     private final CourseRepository courseRepository;
     private final HomeworkRepository homeworkRepository;
     private final CourseExRepository courseExRepository;
+    private final StudentHomeworkRepository studentHomeworkRepository;
 
-    public HomeworkService(CourseRepository courseRepository, HomeworkRepository homeworkRepository, CourseExRepository courseExRepository) {
+    public HomeworkService(CourseRepository courseRepository, HomeworkRepository homeworkRepository, CourseExRepository courseExRepository, StudentHomeworkRepository studentHomeworkRepository) {
         this.courseRepository = courseRepository;
         this.homeworkRepository = homeworkRepository;
         this.courseExRepository = courseExRepository;
+        this.studentHomeworkRepository = studentHomeworkRepository;
     }
 
     public OptionItemList getCourseItemOptionList(DataRequest dataRequest) {
@@ -115,18 +120,48 @@ public class HomeworkService {
         return CommonMethod.getReturnMessageOK();
     }
 
+//    public DataResponse homeworkDelete(DataRequest dataRequest) {
+//        Integer homeworkId = dataRequest.getInteger("homeworkId");
+//        Optional<Homework> op;
+//        Homework h = null;
+//        if(homeworkId != null){
+//            op = homeworkRepository.findById(homeworkId);
+//            if(op.isPresent()) {
+//                h = op.get();
+//                homeworkRepository.delete(h);
+//            }
+//        }
+//        return CommonMethod.getReturnMessageOK();
+//    }
+
     public DataResponse homeworkDelete(DataRequest dataRequest) {
         Integer homeworkId = dataRequest.getInteger("homeworkId");
-        Optional<Homework> op;
+        Optional<StudentHomework> op1;
+        StudentHomework sh1 = null;
+        StudentHomework sh2 = null;
+        if (homeworkId != null) {
+            op1 = studentHomeworkRepository.findByPersonHomework(2, homeworkId);
+            if (op1.isPresent()) {
+                sh1 = op1.get();
+                studentHomeworkRepository.delete(sh1);
+            }
+
+            op1 = studentHomeworkRepository.findByPersonHomework(3, homeworkId);
+            if (op1.isPresent()) {
+                sh2 = op1.get();
+                studentHomeworkRepository.delete(sh2);
+            }
+        }
+
+        Optional<Homework> op2;
         Homework h = null;
         if(homeworkId != null){
-            op = homeworkRepository.findById(homeworkId);
-            if(op.isPresent()) {
-                h = op.get();
+            op2 = homeworkRepository.findById(homeworkId);
+            if(op2.isPresent()) {
+                h = op2.get();
                 homeworkRepository.delete(h);
             }
         }
         return CommonMethod.getReturnMessageOK();
     }
-
 }
