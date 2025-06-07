@@ -9,6 +9,7 @@ import com.teach.javafx.request.HttpRequestUtil;
 import com.teach.javafx.util.CommonMethod;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -108,8 +109,7 @@ public class CourseListController {
         req.add("time",inf);
         DataResponse res = HttpRequestUtil.request("/api/studentCourseList/addCourse",req);
         MessageDialog.showDialog(res.getMsg());
-        getCourseMap();
-        setContent();
+        refresh();
         clearAddInf();
     }
 
@@ -188,5 +188,10 @@ public class CourseListController {
         if(res!=null){
             course = (Map<String, String>) res.getData();
         }
+    }
+
+    public void refresh() {
+        getCourseMap();
+        setContent();
     }
 }

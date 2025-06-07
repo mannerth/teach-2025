@@ -150,7 +150,7 @@ public class CourseExController {
             }
         }
         for (int j = 0; j < OpLis.size(); j++) {
-            map = courseExList.get(j);
+            map = OpLis.get(j);
             map.put("time0",map.get("time"));
             map.replace("time",getTimeString(map.get("time").toString()));
             editButton = new Button("编辑");

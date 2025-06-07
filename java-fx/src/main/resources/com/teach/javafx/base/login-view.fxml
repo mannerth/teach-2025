@@ -47,4 +47,10 @@
        </GridPane>
     </HBox>
     <Button fx:id="loginButton" onAction="#onLoginButtonClick" text="登录" />
+    <VBox>
+        <Button onAction="#onChangeToAdmin" text="管理员登录" />
+        <Button onAction="#onChangeToStudent" text="学生登录" />
+        <Button onAction="#onChangeToTeacher" text="教师登录" />
+    </VBox>
+
 </VBox>

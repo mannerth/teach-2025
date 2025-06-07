@@ -18,11 +18,11 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" prefWidth="800.0" fx:controller="com.teach.javafx.controller.NotificationController">
+<BorderPane fx:id="borderPane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" prefWidth="800.0" fx:controller="com.teach.javafx.controller.NotificationController">
     <top>
-        <HBox id="HBox" alignment="CENTER_LEFT" spacing="5.0" >
+        <HBox fx:id="hBox" alignment="CENTER_LEFT" spacing="5.0" >
             <children>
-                <FlowPane prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                <FlowPane fx:id="flowPane" prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                     <children>
                         <Button mnemonicParsing="false" onAction="#onAddButtonClick" text="添加">
                             <FlowPane.margin>
@@ -58,7 +58,7 @@
         </HBox>
     </top>
     <center>
-        <SplitPane dividerPositions="0.7,0.3">
+        <SplitPane fx:id="splitPane" dividerPositions="0.7,0.3">
             <items>
                 <TableView fx:id="dataTableView" >
                     <columns>
@@ -67,7 +67,7 @@
                         <TableColumn fx:id="titleColumn" prefWidth="650.0" text="主题" />
                     </columns>
                 </TableView>
-                <VBox alignment="TOP_CENTER" spacing="20.0" >
+                <VBox fx:id="vBox" alignment="TOP_CENTER" spacing="20.0" >
                     <padding>
                         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                     </padding>

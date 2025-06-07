@@ -16,4 +16,16 @@ import java.util.List;
 public interface HomeworkRepository extends JpaRepository<Homework,Integer> {
     @Query(value="from Homework where (?1=0 or course.courseId=?1)")
     List<Homework> findByCourseId(Integer courseId);
+
+    @Query(value="from Homework where (?1=0 or courseEx.courseExId=?1)")
+    List<Homework> findByCourseExId(Integer courseExId);
+
+    @Query(value="from Homework where (?1=0 or student.person.personId=?1)")
+    List<Homework> findByStudentId(Integer studentId);
+
+    @Query(value= "from Homework h where (?1 = '' or h.student.person.name like %?1% or h.teacher.person.name like %?1%) and (?2='' or h.student.person.num = ?2) and (?3= '' or h.teacher.person.num = ?3)")
+    List<Homework> getHomeworkList(String search, String studentNum, String teacherNum);
+
+    @Query(value = "from Homework where courseEx.courseExId=?1")
+    List<Homework> findByCourseEx(Integer id);
 }

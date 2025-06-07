@@ -225,6 +225,10 @@ public class BaseController {
        return baseService.htmlGetBaseHtmlPage(request);
     }
 
+    @PostMapping("/getDataBaseUserName")
+    public DataResponse getDataBaseUserName(@Valid @RequestBody DataRequest dataRequest) {
+        return baseService.getDataBaseUserName();
+    }
 
 
     //  Web 请求

@@ -22,6 +22,11 @@ public class CourseExController {
         return courseExService.postNewCourse(dataRequest);
     }
 
+    @PostMapping("/getOptionItemList")
+    public OptionItemList getOptionItemList(@Valid@RequestBody DataRequest dataRequest){
+        return courseExService.getCourseExOptionItemList(dataRequest);
+    }
+
     @PostMapping("/changeCourseChoosable")
     public DataResponse changeCourseChoosable(@Valid @RequestBody DataRequest dataRequest) {
         return courseExService.changeCourseChoosable(dataRequest);

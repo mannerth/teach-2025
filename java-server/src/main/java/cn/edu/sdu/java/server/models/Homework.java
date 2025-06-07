@@ -29,9 +29,21 @@ public class Homework {
     @JoinColumn(name = "courseId")
     private Course course;
 
+    @ManyToOne
+    @JoinColumn(name = "courseExId")
+    private CourseEx courseEx;
+
     private String content;
     private Date homeworkReleasingTime;
     private Date homeworkDeadline;
+
+    @ManyToOne
+    @JoinColumn(name = "studentId")
+    private Student student;
+
+    @ManyToOne
+    @JoinColumn(name = "teacherId")
+    private Teacher teacher;
 
     @Lob
     @Basic(fetch = FetchType.LAZY)

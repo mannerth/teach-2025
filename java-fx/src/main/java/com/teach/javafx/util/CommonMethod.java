@@ -2,6 +2,10 @@ package com.teach.javafx.util;
 
 
 import com.teach.javafx.request.OptionItem;
+import javafx.event.ActionEvent;
+import javafx.scene.Node;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableView;
 /**
  * CommonMethod 公共处理方法实例类
  */
@@ -266,5 +270,17 @@ public class CommonMethod {
             iList.add(new OptionItem(m));
         }
         return iList;
+    }
+
+    //通过指定某个元素，获取该元素所在的TableView行的数据
+    //level: 指定父亲级别
+    public static Object getRowValue(ActionEvent event, int level, TableView tableView){
+        Node n = (Node)event.getTarget();
+        for(int i = 0; i < level; i++){
+            n = n.getParent();
+        }
+        TableCell<?, ?> cell = (TableCell<?, ?>) n;
+        int rowIndex = cell.getIndex();
+        return tableView.getItems().get(rowIndex);
     }
 }

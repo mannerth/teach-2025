@@ -44,6 +44,9 @@ public class MainFrameController {
     @FXML
     private Label role_status;
 
+    @FXML
+    private Label systemPrompt;
+
     private ChangePanelHandler handler= null;
 
     void addMenuItems(Menu parent, List<Map> mList) {
@@ -164,7 +167,12 @@ public class MainFrameController {
     @FXML
     public void initialize() {
         handler =new ChangePanelHandler();
-        DataResponse res = HttpRequestUtil.request("/api/base/getMenuList",new DataRequest());
+        DataRequest req= new DataRequest();
+        DataResponse res;
+        res = HttpRequestUtil.request("/api/base/getDataBaseUserName",req);
+        String userName = (String)res.getData();
+        systemPrompt.setText("服务器：" + HttpRequestUtil.serverUrl + " 数据库：" + userName);
+        res = HttpRequestUtil.request("/api/base/getMenuList",req);
         List<Map> mList = (List<Map>)res.getData();
         initMenuBar(mList);
         initMenuTree(mList);
@@ -376,7 +384,7 @@ public class MainFrameController {
         try {
             var width = MainApplication.getMainStage().getWidth();
             var height = MainApplication.getMainStage().getHeight();
-            //MainApplication.getMainStage().setIconified(true);
+            MainApplication.getMainStage().setIconified(true);
             Scene scene = new Scene(fxmlLoader.load());
             AppStore.setMainFrameController((MainFrameController) fxmlLoader.getController());
             MainApplication.resetStage(names, scene);

@@ -21,6 +21,16 @@ public class HomeworkController {
     public OptionItemList getCourseItemOptionList(@Valid @RequestBody DataRequest dataRequest) {
         return homeworkService.getCourseItemOptionList(dataRequest);
     }
+
+    @PostMapping("/getCourseExItemOptionList")
+    public OptionItemList getCourseExItemOptionList(@Valid @RequestBody DataRequest dataRequest) {
+        return homeworkService.getCourseExItemOptionList(dataRequest);
+    }
+
+//    @PostMapping("/getStudentItemOptionList")
+//    public OptionItemList getStudentItemOptionList(@Valid @RequestBody DataRequest dataRequest) {
+//        return homeworkService.getStudentItemOptionList(dataRequest);
+//    }
     @PostMapping("/getHomeworkList")
     public DataResponse getHomeworkList(@Valid @RequestBody DataRequest dataRequest) {
         return homeworkService.getHomeworkList(dataRequest);

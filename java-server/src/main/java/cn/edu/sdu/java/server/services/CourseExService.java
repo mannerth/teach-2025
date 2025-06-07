@@ -19,13 +19,15 @@ public class CourseExService {
     private final TeacherRepository teacherRepository;
     private final StudentRepository studentRepository;
     private final StudentCourseRepository studentCourseRepository;
+    private final StudentCourseListService studentCourseListService;
 
-    public CourseExService(CourseExRepository courseExRepository, CourseRepository courseRepository, TeacherRepository teacherRepository, StudentRepository studentRepository, StudentCourseRepository studentCourseRepository){
+    public CourseExService(CourseExRepository courseExRepository, CourseRepository courseRepository, TeacherRepository teacherRepository, StudentRepository studentRepository, StudentCourseRepository studentCourseRepository, StudentCourseListService studentCourseListService){
         this.courseExRepository = courseExRepository;
         this.courseRepository = courseRepository;
         this.teacherRepository = teacherRepository;
         this.studentRepository = studentRepository;
         this.studentCourseRepository = studentCourseRepository;
+        this.studentCourseListService = studentCourseListService;
     }
 
     /*
@@ -165,13 +167,34 @@ public class CourseExService {
         return new OptionItemList(0,ret);
     }
 
+    /// 请求参数 课程：courseId     教师号： teacherNum
+    public OptionItemList getCourseExOptionItemList(DataRequest dataRequest){
+        Map map = dataRequest.getData();
+//        Integer courseExId = CommonMethod.getInteger(map, "courseExId");
+        Integer courseId = CommonMethod.getInteger(map, "courseId");
+        String num = CommonMethod.getString(map, "teacherNum");
+        if(courseId == null) courseId = 0;
+        List<CourseEx> list1 ;
+//        List<CourseEx> list2 = new ArrayList<>();
+        list1 = courseExRepository.findCourseByTeacherCourseId(courseId, num, null);
+        List<OptionItem> ret = new ArrayList<>();
+        for( CourseEx i : list1){
+            ret.add(new OptionItem(i.getCourseExId(), i.getCourseExId().toString(), i.getCourse_num()+"-"+i.getTeacher().getPerson().getName()));
+        }
+        return new OptionItemList(0, ret);
+    }
+
     /// 学生获取已经选的课程
     public DataResponse getSelectedCourse(DataRequest dataRequest){
         Map<String, Object> map = dataRequest.getData();
         Integer id = CommonMethod.getInteger(map, "personId");
         if(id==null)
             return CommonMethod.getReturnMessage(0,"信息不全");
-        List<CourseEx> list = courseExRepository.findByStudent(id);
+        List<CourseEx> list = new ArrayList<>();
+        List<StudentCourse> sclist = studentCourseRepository.findByStudent(id);
+        for(var i : sclist){
+            list.add(i.getCourseEx());
+        }
         return getResponseFromList(list);
     }
 
@@ -195,6 +218,10 @@ public class CourseExService {
                 return CommonMethod.getReturnMessage(0,"不能重复选课！");
             }
         }
+        DataResponse addCourseList = studentCourseListService.addCourse(personId, courseEx.getTime_inf(), courseEx.getCourse().getName()+","+courseEx.getPlace());
+        if(addCourseList.getCode()==1){
+            return addCourseList;
+        }
         StudentCourse studentCourse = new StudentCourse();
         studentCourse.setCourseEx(courseEx);
         studentCourse.setStudent(student);
@@ -204,7 +231,7 @@ public class CourseExService {
         courseEx.getStudentCourses().add(studentCourse);
         studentRepository.save(student);
         courseExRepository.save(courseEx);
-        return CommonMethod.getReturnMessage(1,"选课成功!");
+        return CommonMethod.getReturnMessage(1,"选课成功！添加到课表！");
     }
 
     public DataResponse studentCancelSelectCourse(DataRequest dataRequest){

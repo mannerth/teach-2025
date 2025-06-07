@@ -8,11 +8,12 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.text.Text?>
 <BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" prefWidth="800.0" fx:controller="com.teach.javafx.controller.HomeworkTableController">
     <top>
         <HBox id="HBox" alignment="CENTER_LEFT" spacing="5.0" >
             <children>
-                <FlowPane prefHeight="40.0" prefWidth="240.0" BorderPane.alignment="CENTER">
+                <FlowPane fx:id="flowPane" prefHeight="40.0" prefWidth="240.0" BorderPane.alignment="CENTER">
                     <children>
                         <Button mnemonicParsing="false" onAction="#onAddButtonClick" text="布置作业">
                             <FlowPane.margin>
@@ -58,22 +59,28 @@
         </HBox>
     </top>
     <center>
-        <TableView fx:id="dataTableView"  >
+        <TableView fx:id="dataTableView">
             <columns>
                 <TableColumn fx:id="homeworkIdColumn" prefWidth="60.0" text="作业编号" />
                 <TableColumn fx:id="courseNumColumn" prefWidth="50.0" text="课程号" />
-                <TableColumn fx:id="courseNameColumn" prefWidth="140.0" text="课程名" />
+                <TableColumn fx:id="courseNameColumn" prefWidth="80.0" text="课程名" />
+                <TableColumn fx:id="courseExNumColumn" prefWidth="100.0" text="课序号" />
                 <TableColumn fx:id="homeworkReleasingTimeColumn" prefWidth="140.0" text="作业发布日期" />
                 <TableColumn fx:id="homeworkDeadlineColumn" prefWidth="140.0" text="作业截止日期" />
-                <TableColumn fx:id="contentColumn" prefWidth="240.0" text="作业内容" />
+                <TableColumn fx:id="contentColumn" prefWidth="190.0" text="作业内容" />
                 <TableColumn fx:id="editColumn" prefWidth="52.0" text="操作" />
                 <TableColumn fx:id="submitColumn" prefWidth="75.0" text="提交" />
             </columns>
         </TableView>
     </center>
     <right>
-        <VBox fx:id="Vbox" alignment="CENTER" spacing="5.0" prefWidth="360" prefHeight="200" BorderPane.alignment="CENTER">
-            <ImageView fx:id="photoImageView" fitWidth="360" fitHeight="200" preserveRatio="true" />
+        <VBox fx:id="VBox" alignment="CENTER" spacing="5.0" prefWidth="360" prefHeight="400" BorderPane.alignment="CENTER">
+            <ImageView fx:id="photoImageView" fitWidth="360" fitHeight="240" preserveRatio="true" />
+            <Text fx:id="studentOneText" text="学生1 杨平" />
+            <ImageView fx:id="studentOnePhotoImageView" fitWidth="360" fitHeight="240" preserveRatio="true" />
+            <Text fx:id="studentTwoText" text="学生2 张菊" />
+            <ImageView fx:id="studentTwoPhotoImageView" fitWidth="360" fitHeight="240" preserveRatio="true" />
         </VBox>
+
     </right>
 </BorderPane>

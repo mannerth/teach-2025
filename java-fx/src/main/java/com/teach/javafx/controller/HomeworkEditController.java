@@ -1,9 +1,10 @@
 package com.teach.javafx.controller;
 
-import com.teach.javafx.controller.base.MessageDialog;
-import com.teach.javafx.request.OptionItem;
+
+import com.teach.javafx.request.*;
 import com.teach.javafx.util.CommonMethod;
 import com.teach.javafx.util.DateTimeTool;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +22,10 @@ public class HomeworkEditController {
     @FXML
     private ComboBox<OptionItem> courseComboBox;
     private List<OptionItem> courseList;
+
+    @FXML
+    private ComboBox<OptionItem> courseExComboBox;
+    private List<OptionItem> courseExList;
     @FXML
     private TextField contentField;
     @FXML
@@ -52,6 +58,11 @@ public class HomeworkEditController {
         op = courseComboBox.getSelectionModel().getSelectedItem();
         if (op != null) {
             data.put("courseId", Integer.parseInt(op.getValue()));
+        }
+
+        op = courseExComboBox.getSelectionModel().getSelectedItem();
+        if (op != null) {
+            data.put("courseExId", Integer.parseInt(op.getValue()));
         }
         data.put("homeworkId", homeworkId);
 
@@ -93,8 +104,19 @@ public class HomeworkEditController {
     }
 
     public void init() {
+        // 初始化课程列表
         courseList = homeworkTableController.getCourseList();
         courseComboBox.getItems().addAll(courseList);
+
+
+        // 添加课程选择的监听器
+        courseComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null && !newValue.equals(oldValue)) {
+                Integer courseId = Integer.parseInt(newValue.getValue());
+                loadCourseExList(courseId);
+                System.out.println("NB");
+            }
+        });
     }
 
     public void showDialog(Map data) {
@@ -104,20 +126,34 @@ public class HomeworkEditController {
             courseComboBox.getSelectionModel().select(-1);
 
             courseComboBox.setDisable(false);
+
             contentField.setText("");
+
+            courseExComboBox.getSelectionModel().select(-1);
+
+            courseExComboBox.setDisable(false);
 
             deadlineDatePicker.setValue(null);
 
             deadlineHourSpinner.getValueFactory().setValue(0); // 默认小时为0
             deadlineMinuteSpinner.getValueFactory().setValue(0); // 默认分钟为0
         } else {
+//            courseExComboBox.getItems().clear();
             homeworkId = CommonMethod.getInteger(data, "homeworkId");
 
-            courseComboBox.getSelectionModel().select(CommonMethod.getOptionItemIndexByValue(courseList, CommonMethod.getString(data, "courseId")));
-
+            // 选择课程
+            String courseIdStr = CommonMethod.getString(data, "courseId");
+            if (courseList != null) {
+                courseComboBox.getSelectionModel().select(CommonMethod.getOptionItemIndexByValue(courseList, courseIdStr));
+            } else {
+                System.out.println("courseList is null");
+            }
             courseComboBox.setDisable(true);
-            contentField.setText(CommonMethod.getString(data, "content"));
 
+            courseExComboBox.setDisable(false);
+
+            // 设置内容
+            contentField.setText(CommonMethod.getString(data, "content"));
 
             String releasingTimeStr = DateTimeTool.getCurrentDate();
             System.out.println("Homework Releasing Time: " + releasingTimeStr);
@@ -145,4 +181,45 @@ public class HomeworkEditController {
             }
         }
     }
+
+    public void loadCourseExList(Integer courseId) {
+        // 清空现有的课序号列表
+        courseExComboBox.getItems().clear();
+
+        // 构造请求参数
+        DataRequest req = new DataRequest();
+        req.add("courseId", courseId);
+
+        // 在后台线程中发送请求
+        new Thread(() -> {
+            DataResponse res = HttpRequestUtil.request("/api/CourseEx/getOptionItemList", req);
+            List<OptionItem> list = HttpRequestUtil.requestOptionItemList("/api/CourseEx/getOptionItemList", req);
+
+            Platform.runLater(() -> {
+                if (res != null) {
+                    System.out.println("Response code: " + res.getCode());
+                    if (res.getCode() == 0) {
+                        try {
+                            //List<Map<String, Object>> dataList = (List<Map<String, Object>>) res.getData();
+                            List<OptionItem> courseExList = new ArrayList<>();
+                            for (var i : list) {
+                                courseExList.add(i);
+                            }
+                            // 将 courseExList 添加到 courseExComboBox 的 items 中
+                            courseExComboBox.getItems().addAll(courseExList);
+                        } catch (ClassCastException e) {
+                            System.err.println("Invalid response data type: " + res.getData().getClass().getName());
+                        }
+                    } else {
+                        System.out.println("Failed to get courseExList. Response code: " + res.getCode());
+                    }
+                } else {
+                    System.out.println("Failed to get courseExList. Response code: null");
+                }
+            });
+        }).start();
+    }
+
+
+
 }
