@@ -450,6 +450,9 @@ public class HomeworkTableController {
         else {
             MessageDialog.showDialog(res.getMsg());
         }
+
+        studentOnePhotoImageView.setImage(null);
+        studentTwoPhotoImageView.setImage(null);
     }
 
 
