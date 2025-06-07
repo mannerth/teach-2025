@@ -62,4 +62,37 @@ public class LoginController {
             throw new RuntimeException(e);
         }
     }
+
+    public void onChangeToStudent(){
+        changeRole("2022030001","123456","学生中心");
+    }
+
+    public void onChangeToTeacher(){
+        changeRole("teacher1","123456","教师中心");
+    }
+
+    public void onChangeToAdmin(){
+        changeRole("admin","123456","教务管理");
+    }
+
+    private void changeRole(String username, String pwd, String names){
+        LoginRequest loginRequest = new LoginRequest(username,pwd);
+        String msg = HttpRequestUtil.login(loginRequest);
+        if(msg != null) {
+            MessageDialog.showDialog( msg);
+            return;
+        }
+        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("base/main-frame.fxml"));
+        try {
+            var width = MainApplication.getMainStage().getWidth();
+            var height = MainApplication.getMainStage().getHeight();
+            MainApplication.getMainStage().setIconified(true);
+            Scene scene = new Scene(fxmlLoader.load());
+            AppStore.setMainFrameController((MainFrameController) fxmlLoader.getController());
+            MainApplication.resetStage(names, scene);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

@@ -36,8 +36,10 @@
         </Label>
         <Button text="切换为学生" onAction="#onChangeToStudent" />
         <Button text="切换为老师" onAction="#onChangeToTeacher" />
-        <Pane prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="ALWAYS" />
         <Button text="切换为管理员" onAction="#onChangeToAdmin" />
+        <Label fx:id="systemPrompt" />
+        <Pane prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="ALWAYS" />
+
         <Label font="$x3" maxWidth="-1.0" text="Right status" textFill="$x4" HBox.hgrow="NEVER" />
       </children>
       <padding>

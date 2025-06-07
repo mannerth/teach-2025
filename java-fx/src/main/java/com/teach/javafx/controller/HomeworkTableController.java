@@ -17,14 +17,12 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.MapValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import jdk.incubator.vector.VectorOperators;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -313,9 +311,7 @@ public class HomeworkTableController {
                     }
                 }
             });
-        } else if (roleName.equals("ROLE_ADMIN")) {
-
-        }
+        } 
 
 
         onQueryButtonClick();

@@ -190,7 +190,11 @@ public class CourseExService {
         Integer id = CommonMethod.getInteger(map, "personId");
         if(id==null)
             return CommonMethod.getReturnMessage(0,"信息不全");
-        List<CourseEx> list = courseExRepository.findByStudent(id);
+        List<CourseEx> list = new ArrayList<>();
+        List<StudentCourse> sclist = studentCourseRepository.findByStudent(id);
+        for(var i : sclist){
+            list.add(i.getCourseEx());
+        }
         return getResponseFromList(list);
     }
 
