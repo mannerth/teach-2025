@@ -311,7 +311,7 @@ public class HomeworkTableController {
                     }
                 }
             });
-        } 
+        }
 
 
         onQueryButtonClick();
