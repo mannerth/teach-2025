@@ -47,6 +47,12 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.11.0</version>
+                <configuration>
+                    <compilerArgs>
+                        <arg>-Xlint:unchecked</arg> <!-- 启用未检查警告 -->
+                        <arg>-Xlint:deprecation</arg> <!-- 可选：启用弃用警告 -->
+                    </compilerArgs>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.openjfx</groupId>

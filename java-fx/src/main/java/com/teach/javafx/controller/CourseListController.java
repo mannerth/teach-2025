@@ -132,7 +132,11 @@ public class CourseListController {
         week.setValue("第1周");
         week.valueProperty().addListener(
                 (observable, oldValue, newValue) -> {
-                    theWeek = ((String)newValue).charAt(1) - '0';
+                    if(((String)newValue).length()%2==1){
+                        theWeek = ((String)newValue).charAt(1) - '0';
+                    } else{
+                        theWeek = Integer.parseInt(((String)newValue).substring(1,3));
+                    }
                     setContent();
                 }
         );
@@ -147,16 +151,12 @@ public class CourseListController {
         for(String key : course.keySet()){ //遍历Map
             int day = key.charAt(0)-'0';
             int cl = key.charAt(1)-'0';
-            if(key.length()>=6){
+            if(key.length()>3){
                 String subStr = key.substring(3);
                 String[] durationStr = subStr.split("-");
                 int begin = 0,end = 0;
-                for(int i = 0; i < durationStr[0].length(); ++i){
-                    begin += (durationStr[0].charAt(durationStr[0].length()-1-i) - '0')*Math.pow(10,i);
-                }
-                for(int i = 0; i < durationStr[1].length(); ++i){
-                    end += (durationStr[1].charAt(durationStr[1].length()-1-i) - '0')*Math.pow(10,i);
-                }
+                begin = Integer.parseInt(durationStr[0]);
+                end = Integer.parseInt(durationStr[1]);
                 if(theWeek<begin||theWeek>end)
                     continue;
             }

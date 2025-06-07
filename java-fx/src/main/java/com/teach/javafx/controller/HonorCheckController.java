@@ -28,7 +28,6 @@ public class HonorCheckController {
     private final String HONOR_INTERNSHIP = "HONOR_INTERNSHIP";
     private final String HONOR_PROJ = "HONOR_PROJ";
     private final String HONOR_LECTURE = "HONOR_LECTURE";
-    private final String BASE_URL = "/api/honor";
     @FXML
     private GridPane gridPane;
     @FXML
@@ -55,7 +54,8 @@ public class HonorCheckController {
     public void requestHonors(){
         DataRequest req = new DataRequest();
         req.add("personId", AppStore.getJwt().getId());
-        DataResponse res = HttpRequestUtil.request(BASE_URL+"/getHonors",req);
+        String BASE_URL = "/api/honor";
+        DataResponse res = HttpRequestUtil.request(BASE_URL +"/getHonors",req);
         if(res != null && res.getCode() == 0){
             honors = (ArrayList<Map>)(res.getData());
         }

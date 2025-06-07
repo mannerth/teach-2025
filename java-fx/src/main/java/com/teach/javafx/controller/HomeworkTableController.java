@@ -150,21 +150,22 @@ public class HomeworkTableController {
                 });
                 map.put("edit", editButton);
             }
+            try{
+                if(roleName.equals("ROLE_STUDENT")) {
+                    Button submitButton = new Button("提交作业");
+                    // 直接将 homeworkId 存储到按钮的属性中
+                    submitButton.getProperties().put("homeworkId", map.get("homeworkId"));
+                    Map finalMap = map;
+                    submitButton.setOnAction(e -> {
+                        // 从按钮的属性中获取 homeworkId
+                        this.homeworkId = Integer.parseInt(finalMap.get("homeworkId").toString()); // 设置当前作业的 homeworkId
+                        onPhotoButtonClick(); // 调用 onPhotoButtonClick 方法
+                    });
+                    map.put("submit", submitButton);
+                }
+            }catch (Exception e){
 
-            if(roleName.equals("ROLE_STUDENT")) {
-                Button submitButton = new Button("提交作业");
-                // 直接将 homeworkId 存储到按钮的属性中
-                submitButton.getProperties().put("homeworkId", map.get("homeworkId"));
-                Map finalMap = map;
-                submitButton.setOnAction(e -> {
-                    // 从按钮的属性中获取 homeworkId
-                    int homeworkId = Integer.parseInt(finalMap.get("homeworkId").toString());
-                    this.homeworkId = homeworkId; // 设置当前作业的 homeworkId
-                    onPhotoButtonClick(); // 调用 onPhotoButtonClick 方法
-                });
-                map.put("submit", submitButton);
             }
-
 
             observableList.addAll(FXCollections.observableArrayList(map));
         }
